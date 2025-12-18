@@ -14,3 +14,14 @@ const page = () => {
 };
 
 export default page;
+
+import { Suspense } from "react";
+import UClient from "./u-client";
+
+export default function Page() {
+  return (
+    <Suspense fallback={null}>
+      <UClient />
+    </Suspense>
+  );
+}
