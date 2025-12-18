@@ -1,17 +1,22 @@
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/app/api/auth/[...nextauth]/options";
 import MainFeature from "@/components/MainFeature";
+import { Session } from "next-auth";
 
 type PageProps = {
-  params: {
+  params: Promise<{
     username: string;
-  };
+  }>;
 };
 
-export default function Page({ params }: PageProps) {
-  const username = params.username;
+export default async function Page({ params }: PageProps) {
+  const { username } = await params;
+
+  const session: Session | null = await getServerSession(authOptions);
+
+  // console.log("username came to be:", username); // ✅ "i"
 
   return (
-    <main className="w-full overflow-hidden bg-zinc-50 dark:bg-zinc-950">
-      <MainFeature username={username} allowEdit={false} />
-    </main>
+    <MainFeature session={session} username={username} allowEdit={false} />
   );
 }

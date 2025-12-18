@@ -1,27 +1,17 @@
-"use client";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/app/api/auth/[...nextauth]/options";
 import MainFeature from "@/components/MainFeature";
-import { useSearchParams } from "next/navigation";
+import { Session } from "next-auth";
 
-const page = () => {
-  const searchParams = useSearchParams();
-  const username: string | null = searchParams.get("username");
-
-  return (
-    <main className="w-full overflow-hidden bg-zinc-50 dark:bg-zinc-950">
-      <MainFeature username={username ? username : undefined} />
-    </main>
-  );
+type PageProps = {
+  searchParams: Promise<{
+    username?: string;
+  }>;
 };
 
-export default page;
-
-import { Suspense } from "react";
-import UClient from "./u-client";
-
-export default function Page() {
-  return (
-    <Suspense fallback={null}>
-      <UClient />
-    </Suspense>
-  );
+export default async function Page({ searchParams }: PageProps) {
+  const session: Session | null = await getServerSession(authOptions);
+  const { username } = await searchParams;
+  // console.log(username);
+  return <MainFeature session={session} username={username} allowEdit={true} />;
 }

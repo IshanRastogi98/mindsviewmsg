@@ -15,7 +15,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { Spinner } from "@/components/ui/spinner";
 import {
   Tooltip,
@@ -42,12 +42,20 @@ import {
 import { useRouter } from "next/navigation";
 import { descriptionSchema } from "@/schemas/descriptionSchema";
 import { useCompletion } from "@ai-sdk/react";
+import { Session } from "next-auth";
 
 type MainFeatureProps = {
+  session: Session | null;
   username?: string;
   allowEdit?: boolean;
 };
-const MainFeature = ({ username = "", allowEdit = true }: MainFeatureProps) => {
+const isDev = process.env.NODE_ENV !== "production";
+
+const MainFeature = ({
+  username = "",
+  allowEdit = true,
+  session,
+}: MainFeatureProps) => {
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [suggestions, setSuggestions] = useState<string[]>([
     "What’s a hobby you've recently started?",
@@ -72,11 +80,12 @@ const MainFeature = ({ username = "", allowEdit = true }: MainFeatureProps) => {
   });
 
   useEffect(() => {
-    if (username)
+    if (username) {
       form.setValue("username", username, {
         shouldValidate: true,
       });
-  }, []);
+    }
+  }, [username, form]);
 
   //2-> submission handling
   const onSubmit: SubmitHandler<z.infer<typeof messageSchema>> = async (
@@ -165,22 +174,53 @@ const MainFeature = ({ username = "", allowEdit = true }: MainFeatureProps) => {
   };
   const message = form.watch("content");
 
-  const handleSuggestionClick = (index: number) => {
-    if (index < 0 || !suggestions[index] || suggestions[index].length === 0)
-      return;
-    form.setValue("content", suggestions[index]);
-  };
+  const handleSuggestionClick = useCallback(
+    (index: number) => {
+      if (!suggestions[index]) return;
+      form.setValue("content", suggestions[index]);
+    },
+    [suggestions, form]
+  );
+  const renderedSuggestions = useMemo(
+    () =>
+      suggestions.map((text, i) => (
+        <div
+          key={i}
+          onClick={() => handleSuggestionClick(i)}
+          className="
+              rounded-xl
+              bg-white/60 dark:bg-zinc-800/60
+              border border-zinc-400/40 hover:border-zinc-800/40 dark:border-white/10
+              p-4
+              text-sm
+              text-zinc-800 dark:text-zinc-100
+              hover:bg-white/80 dark:hover:bg-zinc-700/70
+              transition-colors
+              cursor-pointer
+            "
+        >
+          {text}
+        </div>
+      )),
+    [suggestions, handleSuggestionClick]
+  );
+
+  const handleEditUsername = useCallback(() => {
+    router.replace(`/u/?username=${username}`);
+  }, [router, username]);
 
   useEffect(() => {
-    console.log("completion updated:", completion);
+    if (isDev) {
+      console.log("completion updated:", completion);
+    }
   }, [completion]);
+
   useEffect(() => {
-    if (error) {
-      console.error("completion error:", error);
+    if (isDev) {
+      console.log("completion error:", error);
     }
   }, [error]);
 
-  const { data: session } = useSession();
 
   if (session === undefined) {
     return (
@@ -340,9 +380,7 @@ const MainFeature = ({ username = "", allowEdit = true }: MainFeatureProps) => {
                               type="button"
                               variant="outline"
                               disabled={isSending || isLoading}
-                              onClick={() => {
-                                router.replace(`/u/?username=${username}`);
-                              }}
+                              onClick={handleEditUsername}
                               className="
             h-10 w-10
             bg-white/60 dark:bg-zinc-800/60
@@ -597,27 +635,7 @@ const MainFeature = ({ username = "", allowEdit = true }: MainFeatureProps) => {
                   </form>
                 </Form>
               </div>
-              <div className="flex flex-col gap-4">
-                {suggestions.map((text, i) => (
-                  <div
-                    onClick={() => handleSuggestionClick(i)}
-                    key={i}
-                    className="
-              rounded-xl
-              bg-white/60 dark:bg-zinc-800/60
-              border border-zinc-400/40 hover:border-zinc-800/40 dark:border-white/10
-              p-4
-              text-sm
-              text-zinc-800 dark:text-zinc-100
-              hover:bg-white/80 dark:hover:bg-zinc-700/70
-              transition-colors
-              cursor-pointer
-            "
-                  >
-                    {text}
-                  </div>
-                ))}
-              </div>
+              <div className="flex flex-col gap-4">{renderedSuggestions}</div>
             </motion.div>
           )}
         </AnimatePresence>
