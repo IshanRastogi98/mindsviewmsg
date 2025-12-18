@@ -45,7 +45,7 @@ import { useCompletion } from "@ai-sdk/react";
 import { Session } from "next-auth";
 
 type MainFeatureProps = {
-  session: Session | null;
+  session?: Session | null;
   username?: string;
   allowEdit?: boolean;
 };
@@ -222,39 +222,39 @@ const MainFeature = ({
   }, [error]);
 
 
-  if (session === undefined) {
-    return (
-      <section
-        className="
-          w-full
-          py-24
-          px-6
-          flex justify-center
-        "
-      >
-        <div
-          className="
-            w-full max-w-6xl
-            grid grid-cols-1
+  // if (session === undefined) {
+  //   return (
+  //     <section
+  //       className="
+  //         w-full
+  //         py-24
+  //         px-6
+  //         flex justify-center
+  //       "
+  //     >
+  //       <div
+  //         className="
+  //           w-full max-w-6xl
+  //           grid grid-cols-1
 
-          "
-        >
-          <div
-            className="
-    h-[32rem] w-full
-    rounded-2xl
-    flex items-center justify-center
-    bg-white/5
-    backdrop-blur-xl
-    border border-white/10
-  "
-          >
-            <Skeleton className="h-80 w-3/4 max-w-md rounded-3xl" />
-          </div>
-        </div>
-      </section>
-    );
-  }
+  //         "
+  //       >
+  //         <div
+  //           className="
+  //   h-[32rem] w-full
+  //   rounded-2xl
+  //   flex items-center justify-center
+  //   bg-white/5
+  //   backdrop-blur-xl
+  //   border border-white/10
+  // "
+  //         >
+  //           <Skeleton className="h-80 w-3/4 max-w-md rounded-3xl" />
+  //         </div>
+  //       </div>
+  //     </section>
+  //   );
+  // }
 
   return (
     <section
