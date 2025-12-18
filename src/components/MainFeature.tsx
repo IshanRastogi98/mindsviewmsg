@@ -41,8 +41,15 @@ import {
 } from "./ui/form";
 import { useRouter } from "next/navigation";
 import { descriptionSchema } from "@/schemas/descriptionSchema";
-import { useCompletion } from "@ai-sdk/react";
+import {
+  experimental_useObject as useObject,
+  useCompletion,
+} from "@ai-sdk/react";
 import { Session } from "next-auth";
+import {
+  messageSuggestionSchema,
+  suggestionSchema,
+} from "@/schemas/messageSuggestionSchema";
 
 type MainFeatureProps = {
   session?: Session | null;
@@ -57,11 +64,17 @@ const MainFeature = ({
   session,
 }: MainFeatureProps) => {
   const [showSuggestions, setShowSuggestions] = useState(false);
-  const [suggestions, setSuggestions] = useState<string[]>([
-    "What’s a hobby you've recently started?",
-    "If you could have dinner with any historical figure, who would it be?",
-    "What’s a simple thing that makes you happy?",
+  const [suggestions, setSuggestions] = useState<
+    z.infer<typeof suggestionSchema>
+  >([
+    { message: "What’s a hobby you've recently started?" },
+    {
+      message:
+        "If you could have dinner with any historical figure, who would it be?",
+    },
+    { message: "What’s a simple thing that makes you happy?" },
   ]);
+  const [isLoading, setIsLoading] = useState(false);
   const [isSending, setIsSending] = useState(false);
   const router = useRouter();
 
@@ -122,31 +135,6 @@ const MainFeature = ({
     }
   };
 
-  const { isLoading, complete, completion, error } = useCompletion({
-    api: "/api/suggest-messages",
-    onFinish: (_, completion) => {
-      console.log("FINAL COMPLETION:", completion);
-
-      const parsed = completion
-        .split("||")
-        .map((s) => s.trim())
-        .filter(Boolean);
-
-      setSuggestions(parsed);
-
-      successToast({
-        message: "Fetched Successfully 🎉",
-        description: "Fetched the AI suggestions for you.",
-      });
-    },
-    onError: (error: Error) => {
-      console.error("An AI error occurred:", error);
-      errorToast({
-        message: "AI API Error",
-        description: error.message || "Something went wrong. Please try again.",
-      });
-    },
-  });
   // zod implementation
   const aiForm = useForm<z.infer<typeof descriptionSchema>>({
     // resolver options
@@ -164,26 +152,56 @@ const MainFeature = ({
   const onRefreshSuggessions: SubmitHandler<
     z.infer<typeof descriptionSchema>
   > = async (data: z.infer<typeof descriptionSchema>) => {
-    console.log("desc data is -> ", data);
-
-    complete("", {
-      body: {
-        description: data.description,
-      },
-    });
+    setIsLoading(true);
+    console.log("data is -> ", data);
+    try {
+      const response = await axios.post<ApiResponse>(
+        "/api/suggest-messages",
+        data
+      );
+      console.log(response);
+      if (response.data?.success) {
+        successToast({
+          message: "Success🎉",
+          description: response.data.message,
+        });
+        setSuggestions(
+          response.data.suggestions?.suggestions as z.infer<
+            typeof suggestionSchema
+          >
+        );
+      } else {
+        // console.error(response.data?.message);
+        errorToast({
+          message: "Failed",
+          description:
+            response.data?.message || "Something went wrong. Please try again.",
+        });
+      }
+    } catch (error) {
+      const axiosError = error as AxiosError<ApiResponse>;
+      //   console.error("Error signing up", axiosError.response?.data);
+      errorToast({
+        message: "Error",
+        description:
+          axiosError.response?.data.message ||
+          "Something went wrong. Please try again.",
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
-  const message = form.watch("content");
 
   const handleSuggestionClick = useCallback(
     (index: number) => {
       if (!suggestions[index]) return;
-      form.setValue("content", suggestions[index]);
+      form.setValue("content", suggestions[index].message);
     },
     [suggestions, form]
   );
   const renderedSuggestions = useMemo(
     () =>
-      suggestions.map((text, i) => (
+      suggestions.map((suggestion, i) => (
         <div
           key={i}
           onClick={() => handleSuggestionClick(i)}
@@ -199,7 +217,7 @@ const MainFeature = ({
               cursor-pointer
             "
         >
-          {text}
+          {suggestion.message}
         </div>
       )),
     [suggestions, handleSuggestionClick]
@@ -208,19 +226,6 @@ const MainFeature = ({
   const handleEditUsername = useCallback(() => {
     router.replace(`/u/?username=${username}`);
   }, [router, username]);
-
-  useEffect(() => {
-    if (isDev) {
-      console.log("completion updated:", completion);
-    }
-  }, [completion]);
-
-  useEffect(() => {
-    if (isDev) {
-      console.log("completion error:", error);
-    }
-  }, [error]);
-
 
   // if (session === undefined) {
   //   return (

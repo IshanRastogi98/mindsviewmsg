@@ -40,7 +40,7 @@ const Navbar = () => {
 
   const links = [
     { name: "Home", href: "/", icon: Home },
-    { name: "Messages", href: "/dashboard#messages", icon: MessageCircle },
+    { name: "Messaging", href: "/u", icon: MessageCircle },
     { name: "About", href: "/about", icon: Users },
   ];
   if (session === undefined)

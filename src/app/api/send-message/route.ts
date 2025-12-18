@@ -2,8 +2,30 @@ import connectDB from "@/lib/dbConnect";
 import UserModel from "@/model/user";
 import { Message } from "@/model/user";
 import { messageSchema } from "@/schemas/messageSchema";
+import { rateLimit } from "@/lib/rateLimiter";
+import { getServerSession } from "next-auth";
+import { authOptions } from "../auth/[...nextauth]/options";
+import { NextResponse } from "next/server";
+import { ApiResponse } from "@/types/ApiResponse";
+import { RATE_LIMITS } from "@/lib/rateLimitConfigs";
 
 export async function POST(request: Request) {
+  // check under limit or not
+  const session = await getServerSession(authOptions);
+  const identity =
+    session?.user?._id ?? request.headers.get("x-forwarded-for") ?? "anonymous";
+  const { max, windowMs } = RATE_LIMITS.SEND_MESSAGE;
+  const { allowed, remaining } = rateLimit(identity, max, windowMs);
+  if (!allowed) {
+    return NextResponse.json<ApiResponse>(
+      {
+        success: false,
+        message: "Too many messages sent. Please slow down.",
+      },
+      { status: 429 }
+    );
+  }
+
   await connectDB();
   try {
     let { username, content } = await request.json();

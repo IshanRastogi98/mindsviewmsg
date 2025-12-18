@@ -1,12 +1,13 @@
 import connectDB from "@/lib/dbConnect";
+import { RATE_LIMITS } from "@/lib/rateLimitConfigs";
+import { rateLimit } from "@/lib/rateLimiter";
 import UserModel from "@/model/user";
 import { usernameValidation } from "@/schemas/signUpSchema";
 import { verifyCodeSchema } from "@/schemas/verifySchema";
+import { NextResponse } from "next/server";
 import z from "zod";
 
 export async function POST(request: Request) {
-  await connectDB();
-
   try {
     let body = await request.json();
 
@@ -29,7 +30,26 @@ export async function POST(request: Request) {
     }
 
     const { username, verifyCode, email } = result.data;
+    const identity = `verify:${email ?? username}`;
+    const { max, windowMs } = RATE_LIMITS.VERIFY_CODE;
+    const { allowed, remaining } = rateLimit(identity, max, windowMs);
 
+    if (!allowed) {
+      const response = NextResponse.json(
+        {
+          success: false,
+          message: "Too many attempts. Please try again later.",
+        },
+        { status: 429 }
+      );
+
+      response.headers.set("Retry-After", String(windowMs / 1000));
+      response.headers.set("X-RateLimit-Remaining", "0");
+
+      return response;
+    }
+
+    await connectDB();
     const user = await UserModel.findOne({
       username,
       email,

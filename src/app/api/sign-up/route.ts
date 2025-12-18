@@ -1,7 +1,10 @@
 import connectDB from "@/lib/dbConnect";
 import UserModel from "@/model/user";
 import bcrypt from "bcryptjs";
-import { sendVerificationEmail } from "@/helpers/sendVerificationEmail";
+import {
+  sendVerificationEmail,
+  sendVerificationEmailBrevo,
+} from "@/helpers/sendVerificationEmail";
 import { signUpSchema } from "@/schemas/signUpSchema";
 
 export async function POST(request: Request) {
@@ -103,11 +106,16 @@ export async function POST(request: Request) {
         await newUser.save();
       }
     }
-    const emailResendResponse = await sendVerificationEmail(
+    // const emailResendResponse = await sendVerificationEmail(
+    //   email,
+    //   username,
+    //   otp
+    // ); // resend version
+    const emailResendResponse = await sendVerificationEmailBrevo(
       email,
       username,
       otp
-    );
+    ); // Brevo Version
 
     if (!emailResendResponse.success) {
       return Response.json(

@@ -120,20 +120,26 @@ export default function Home() {
             {/* CTA Buttons */}
             <div className="flex flex-col sm:flex-row gap-4 mt-4">
               <Button
+                asChild
                 size="lg"
                 className="gap-2 bg-zinc-900 text-zinc-100 hover:bg-zinc-800 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-200 transition-colors"
               >
-                Get your link
-                <ArrowRight className="w-4 h-4" />
+                <Link href="/sign-up">
+                  Get your link
+                  <ArrowRight className="w-4 h-4" />
+                </Link>
               </Button>
 
               <Button
+                asChild
                 size="lg"
                 variant="outline"
-                className="gap-2 border-zinc-300 dark:border-zinc-700 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-900 transition-colors"
+                className="gap-ṅ2 border-zinc-300 dark:border-zinc-700 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-900 transition-colors"
               >
-                <LinkIcon className="w-4 h-4" />
-                View demo
+                <Link href="/#main-feature">
+                  <LinkIcon className="w-4 h-4" />
+                  View demoṅ
+                </Link>
               </Button>
             </div>
           </div>

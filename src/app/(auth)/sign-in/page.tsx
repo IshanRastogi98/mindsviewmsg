@@ -59,7 +59,7 @@ const page = () => {
       identifier: data.identifier,
       password: data.password,
     });
-    console.log(result);
+    // console.log(result);
     if (result?.error) {
       if (!result.ok && result.error === "CredentialsSignin") {
         errorToast({
@@ -81,31 +81,31 @@ const page = () => {
   };
 
   return (
-    <div className="min-h-screen bg-zinc-950 text-zinc-100 flex items-center justify-center px-4">
+    <div className="min-h-screen bg-zinc-50 dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 flex items-center justify-center px-4">
       {/* Auth Card Container */}
-      <div className="w-full max-w-md bg-zinc-900/80 border border-zinc-800 backdrop-blur-xl rounded-2xl shadow-2xl p-8">
+      <div className="w-full max-w-md bg-white/80 dark:bg-zinc-900/80 border border-zinc-200 dark:border-zinc-800 backdrop-blur-xl rounded-2xl shadow-2xl p-8">
         {/* Heading */}
         <div className="text-center mb-8">
-          <h1 className="text-2xl font-bold tracking-tight text-zinc-100">
+          <h1 className="text-2xl font-bold tracking-tight text-zinc-900 dark:text-zinc-100">
             Welcome Back
           </h1>
-          <p className="text-sm tracking-wide text-zinc-400 mt-1">
+          <p className="text-sm tracking-wide text-zinc-600 dark:text-zinc-400 mt-1">
             Enter your credentials to continue
           </p>
         </div>
 
-        {/* --- FORM GOES HERE --- */}
+        {/* Form */}
         <div className="space-y-6">
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-              {/* using the old FormField(shadcn) and form(html)*/}
-
               <FormField
                 name="identifier"
                 control={form.control}
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Username/Email</FormLabel>
+                    <FormLabel className="text-zinc-700 dark:text-zinc-300">
+                      Username / Email
+                    </FormLabel>
                     <FormControl>
                       <Input placeholder="username/email" {...field} />
                     </FormControl>
@@ -119,7 +119,9 @@ const page = () => {
                 control={form.control}
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Password</FormLabel>
+                    <FormLabel className="text-zinc-700 dark:text-zinc-300">
+                      Password
+                    </FormLabel>
                     <FormControl>
                       <Input
                         type="password"
@@ -131,11 +133,13 @@ const page = () => {
                   </FormItem>
                 )}
               />
+
               <Button
                 type="submit"
-                variant={"default"}
                 disabled={isSubmitting}
-                className="py-5 text-md w-full text-zinc-900 flex items-center justify-center gap-2 font-medium"
+                className="py-5 text-md w-full flex items-center justify-center gap-2 font-medium
+              bg-zinc-900 text-white hover:bg-zinc-800
+              dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-200"
               >
                 {isSubmitting ? (
                   <>
@@ -152,24 +156,19 @@ const page = () => {
 
         {/* Divider */}
         <div className="flex items-center gap-3 my-8">
-          <div className="flex-1 h-px bg-zinc-800"></div>
+          <div className="flex-1 h-px bg-zinc-200 dark:bg-zinc-800"></div>
           <span className="text-xs text-zinc-500 uppercase tracking-wider">
             or continue with
           </span>
-          <div className="flex-1 h-px bg-zinc-800"></div>
-        </div>
-
-        {/* --- SOCIAL BUTTONS GO HERE --- */}
-        <div className="flex flex-col gap-3">
-          {/* Google / GitHub buttons */}
+          <div className="flex-1 h-px bg-zinc-200 dark:bg-zinc-800"></div>
         </div>
 
         {/* Footer Links */}
-        <p className="mt-8 text-center text-sm text-zinc-500">
+        <p className="mt-8 text-center text-sm text-zinc-600 dark:text-zinc-500">
           Don't have an account?{" "}
           <a
             href="/sign-up"
-            className="text-zinc-300 hover:text-zinc-100 underline"
+            className="text-zinc-900 dark:text-zinc-300 hover:underline"
           >
             Sign Up
           </a>

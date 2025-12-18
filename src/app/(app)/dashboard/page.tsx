@@ -55,7 +55,7 @@ const page = () => {
 
   const fetchAcceptMessage = useCallback(async () => {
     setIsSwitching(true);
-    console.log("switching");
+    // console.log("switching");
     try {
       const response = await axios.get<ApiResponse>(`/api/accept-messages`);
       if (response.data?.success) {
@@ -85,7 +85,7 @@ const page = () => {
     async (refresh: boolean = false) => {
       setIsLoading(true);
       setIsSwitching(false);
-      console.log("fetching");
+      // console.log("fetching");
 
       try {
         const response = await axios.get(`/api/get-messages`);

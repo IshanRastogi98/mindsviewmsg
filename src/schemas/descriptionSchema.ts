@@ -7,3 +7,4 @@ export const descriptionSchema = z.object({
     .max(300, { message: "Content must be no longer than 300 characters" })
     .optional(),
 });
+

@@ -1,7 +1,13 @@
 import connectDB from "@/lib/dbConnect";
+import { RATE_LIMITS } from "@/lib/rateLimitConfigs";
+import { rateLimit } from "@/lib/rateLimiter";
 import UserModel from "@/model/user";
 import { usernameValidation } from "@/schemas/signUpSchema";
+import { ApiResponse } from "@/types/ApiResponse";
+import { getServerSession } from "next-auth";
+import { NextResponse } from "next/server";
 import z from "zod";
+import { authOptions } from "../auth/[...nextauth]/options";
 
 // schema -> to check a obj(of single or multi fields)
 // Username(to validsta so) + Query(data from query params) + Schema((zod)schemas are used)
@@ -10,6 +16,22 @@ const UsernameQuerySchema = z.object({
 });
 // get route to check if the username available
 export async function GET(request: Request) {
+  // check under limit or not
+  const session = await getServerSession(authOptions);
+  const identity =
+    session?.user?._id ?? request.headers.get("x-forwarded-for") ?? "anonymous";
+  const { max, windowMs } = RATE_LIMITS.USERNAME_CHECK;
+  const { allowed, remaining } = rateLimit(identity, max, windowMs);
+  if (!allowed) {
+    return NextResponse.json<ApiResponse>(
+      {
+        success: false,
+        message: "Too many messages sent. Please slow down.",
+      },
+      { status: 429 }
+    );
+  }
+
   await connectDB();
 
   try {

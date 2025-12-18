@@ -22,7 +22,7 @@ export default function VerificationEmail({
     <Html>
       <Head />
 
-      <Preview>your access code has been generated</Preview>
+      <Preview>Your access code has been generated</Preview>
 
       {/* MAIN WRAPPER – responsive on all devices */}
       <Container
@@ -49,7 +49,7 @@ export default function VerificationEmail({
             textAlign: "left",
           }}
         >
-          Verification Requested at Mystry Msg
+          Verification Requested at MindsViewMsg
         </Heading>
 
         <Text

@@ -1,34 +1,94 @@
+import { RATE_LIMITS } from "@/lib/rateLimitConfigs";
+import { rateLimit } from "@/lib/rateLimiter";
 import { descriptionSchema } from "@/schemas/descriptionSchema";
+import { messageSuggestionSchema } from "@/schemas/messageSuggestionSchema";
+import { ApiResponse } from "@/types/ApiResponse";
 import { google } from "@ai-sdk/google";
-import { streamText } from "ai";
+import { generateObject, streamObject } from "ai";
+import { getServerSession } from "next-auth";
 import { NextResponse } from "next/server";
+import * as z from "zod";
+import { authOptions } from "../auth/[...nextauth]/options";
 
 export const maxDuration = 30;
-export const runtime = "edge";
+export const runtime = "nodejs";
+
+
+export function buildPrompt(description?: string) {
+  return `
+You are generating anonymous message suggestions for an anonymous messaging app.
+
+Purpose:
+These messages will be shown to users as suggestions they can send anonymously.
+
+Tone and style:
+- Friendly
+- Curious
+- Non-intrusive
+- Safe for all audiences
+- Suitable for strangers
+
+Rules:
+- Do NOT include personal data
+- Do NOT ask sensitive or invasive questions
+- Do NOT reference the platform itself
+- Each message must be self-contained
+- Each message must feel natural and human
+- Do NOT repeat messages again and again
+
+User description (may be empty):
+${description ? description : "No specific description provided."}
+
+Task:
+Generate exactly three anonymous message suggestions.
+Output strictly in the provided schema.
+`;
+}
 
 export async function POST(request: Request) {
+  // check under limit or not
+  const session = await getServerSession(authOptions);
+  const identity =
+    session?.user?._id ?? request.headers.get("x-forwarded-for") ?? "anonymous";
+  const { max, windowMs } = RATE_LIMITS.AI_SUGGESTIONS;
+  const { allowed, remaining } = rateLimit(identity, max, windowMs);
+  if (!allowed) {
+    return NextResponse.json<ApiResponse>(
+      {
+        success: false,
+        message: "Too many messages sent. Please slow down.",
+      },
+      { status: 429 }
+    );
+  }
+
   try {
-    let { description } = await request.json();
-    const validationResult = descriptionSchema.safeParse({
-      description,
-    });
+    console.log("object");
+    let body: any = {};
+    try {
+      body = await request.json();
+    } catch {
+      body = {};
+    }
+
+    let description = body?.description;
+
+    const validationResult = descriptionSchema.safeParse({ description });
+
     if (!validationResult.success) {
       const { fieldErrors } = validationResult.error.flatten();
 
-      // create clean readable message:
       const errorMessage =
         Object.values(fieldErrors).flat().join(", ") || "Invalid input";
 
-      return Response.json(
-        {
-          success: false,
-          message: errorMessage,
-        },
+      return NextResponse.json(
+        { success: false, message: errorMessage },
         { status: 400 }
       );
     }
     description = validationResult.data.description;
-    console.log("\ndesc", description.length, "\n");
+    // console.log("\nDESCRIPTION:", description, "\n");
+
     const PROMPT_WITH_DESCRIPTION = `
     You are generating anonymous user feedback messages for a social messaging app.
 
@@ -126,17 +186,48 @@ Message 1 || Message 2 || Message 3
 
 
     `;
-    const prompt =
-      description?.trim().length > 0
-        ? PROMPT_WITH_DESCRIPTION
-        : PROMPT_FALLBACK;
+    const prompt = `
+You are generating anonymous message suggestions for an anonymous messaging app.
 
-    const result = streamText({
+Purpose:
+These messages will be shown to users as suggestions they can send anonymously.
+
+Tone and style:
+- Friendly
+- Curious
+- Non-intrusive
+- Safe for all audiences
+- Suitable for strangers
+
+Rules:
+- Do NOT include personal data
+- Do NOT ask sensitive or invasive questions
+- Do NOT reference the platform itself
+- Each message must be self-contained
+- Each message must feel natural and human
+
+User description (may be empty):
+${description ? description : "No specific description provided."}
+
+Task:
+Generate exactly three anonymous message suggestions.
+Each suggestion must be influenced by the description only if it is relevant.
+If the description is empty or vague, generate general-purpose suggestions.
+
+Output strictly in the provided schema.
+`;
+
+    const result = await generateObject({
       model: google("gemini-2.5-flash"),
-      prompt,
+      schema: messageSuggestionSchema,
+      prompt: buildPrompt(description),
     });
-
-    return result.toUIMessageStreamResponse();
+    // console.log("result cxame to be:", result);
+    return NextResponse.json<ApiResponse>({
+      success: true,
+      message: "Fetched the fresh Messages Sussessfully",
+      suggestions: result.object,
+    });
   } catch (error: any) {
     console.error("AI API error:", error);
 

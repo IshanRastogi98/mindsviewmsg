@@ -133,20 +133,20 @@ const page = () => {
   };
 
   return (
-    <div className="min-h-screen bg-zinc-950 text-zinc-100 flex items-center justify-center px-4">
+    <div className="min-h-screen bg-zinc-50 dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 flex items-center justify-center px-4">
       {/* Auth Card Container */}
-      <div className="w-full max-w-md bg-zinc-900/80 border border-zinc-800 backdrop-blur-xl rounded-2xl shadow-2xl p-8">
+      <div className="w-full max-w-md bg-white/80 dark:bg-zinc-900/80 border border-zinc-200 dark:border-zinc-800 backdrop-blur-xl rounded-2xl shadow-2xl p-8">
         {/* Heading */}
         <div className="text-center mb-8">
-          <h1 className="text-2xl font-bold tracking-tight text-zinc-100">
+          <h1 className="text-2xl font-bold tracking-tight text-zinc-900 dark:text-zinc-100">
             Verify account
           </h1>
-          <p className="text-sm tracking-wide text-zinc-400 mt-1">
+          <p className="text-sm tracking-wide text-zinc-600 dark:text-zinc-400 mt-1">
             Enter the OTP to continue
           </p>
         </div>
 
-        {/* --- FORM GOES HERE --- */}
+        {/* Form */}
         <div className="space-y-6">
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
@@ -155,7 +155,9 @@ const page = () => {
                 name="verifyCode"
                 render={({ field }) => (
                   <FormItem className="flex flex-col justify-center items-center gap-6">
-                    <FormLabel>Enter the Verification Code</FormLabel>
+                    <FormLabel className="text-zinc-700 dark:text-zinc-300">
+                      Enter the Verification Code
+                    </FormLabel>
 
                     <FormControl>
                       <InputOTP
@@ -188,9 +190,12 @@ const page = () => {
 
               <Button
                 type="submit"
-                variant={"default"}
                 disabled={isSubmitting || isResending}
-                className="py-5 text-md w-full text-zinc-900 flex items-center justify-center gap-2 font-medium"
+                className="
+                py-5 text-md w-full flex items-center justify-center gap-2 font-medium
+                bg-zinc-900 text-white hover:bg-zinc-800
+                dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-200
+              "
               >
                 {isSubmitting ? (
                   <>
@@ -205,33 +210,35 @@ const page = () => {
           </Form>
         </div>
 
-        {/* Footer Links */}
-
-        <p className="mt-8 text-center text-sm text-zinc-500">
+        {/* Footer */}
+        <p className="mt-8 text-center text-sm text-zinc-600 dark:text-zinc-500">
           The code was sent to {email}
         </p>
-        <p className="mt-2 text-center text-sm text-zinc-500">
-          Code Not Received?{" "}
+
+        <p className="mt-2 text-center text-sm text-zinc-600 dark:text-zinc-500">
+          Code not received?{" "}
           {!isResending && !isSubmitting ? (
             <button
-              disabled={isActive}
+              type="button"
+              disabled={isActive || isSubmitting}
               onClick={handleResendVerificationCode}
-              className="text-zinc-300 hover:text-zinc-100 underline"
+              className="text-zinc-900 dark:text-zinc-300 hover:underline"
             >
               {isActive ? `Resend in ${count}s` : "Resend OTP"}
             </button>
           ) : (
-            <p className="flex place-self-center items-center justify-start gap-1 mt-2 text-center text-sm text-zinc-500">
+            <span className="inline-flex items-center gap-1">
               <Spinner />
-              <span className="mb-1">Resending OTP ...</span>
-            </p>
+              <span>Resending OTP...</span>
+            </span>
           )}
         </p>
-        <p className="mt-2 text-center text-sm text-zinc-500">
-          Want to Edit?{" "}
+
+        <p className="mt-2 text-center text-sm text-zinc-600 dark:text-zinc-500">
+          Want to edit?{" "}
           <a
             href="/sign-up"
-            className="text-zinc-300 hover:text-zinc-100 underline"
+            className="text-zinc-900 dark:text-zinc-300 hover:underline"
           >
             Go Back
           </a>

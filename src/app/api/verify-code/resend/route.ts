@@ -1,8 +1,17 @@
-import { sendVerificationEmail } from "@/helpers/sendVerificationEmail";
+import {
+  sendVerificationEmail,
+  sendVerificationEmailBrevo,
+} from "@/helpers/sendVerificationEmail";
 import connectDB from "@/lib/dbConnect";
+import { RATE_LIMITS } from "@/lib/rateLimitConfigs";
+import { rateLimit } from "@/lib/rateLimiter";
 import UserModel from "@/model/user";
 import { usernameValidation } from "@/schemas/signUpSchema";
+import { ApiResponse } from "@/types/ApiResponse";
+import { getServerSession } from "next-auth";
+import { NextResponse } from "next/server";
 import { z } from "zod";
+import { authOptions } from "../../auth/[...nextauth]/options";
 
 const validationSchema = z.object({
   username: usernameValidation,
@@ -10,7 +19,6 @@ const validationSchema = z.object({
 });
 
 export async function POST(request: Request) {
-  await connectDB();
   try {
     let { username, email } = await request.json();
     const result = validationSchema.safeParse({
@@ -35,6 +43,26 @@ export async function POST(request: Request) {
     }
     username = result.data.username;
     email = result.data.email;
+
+    const identity = `resend:${email}`;
+
+    const { max, windowMs } = RATE_LIMITS.RESEND_CODE;
+    const { allowed, remaining } = rateLimit(identity, max, windowMs);
+
+    if (!allowed) {
+      const response = NextResponse.json(
+        {
+          success: false,
+          message: "Too many attempts. Please try again later.",
+        },
+        { status: 429 }
+      );
+
+      response.headers.set("Retry-After", String(windowMs / 1000));
+      response.headers.set("X-RateLimit-Remaining", "0");
+    }
+
+    await connectDB();
 
     const user = await UserModel.findOne({
       username,
@@ -66,11 +94,16 @@ export async function POST(request: Request) {
       await user.save();
     }
 
-    const emailResendResponse = await sendVerificationEmail(
+    // const emailResendResponse = await sendVerificationEmail(
+    //   email,
+    //   username,
+    //   otp
+    // ); // resend version
+    const emailResendResponse = await sendVerificationEmailBrevo(
       email,
       username,
       otp
-    );
+    ); // Brevo Version
     if (!emailResendResponse.success) {
       return Response.json(
         {

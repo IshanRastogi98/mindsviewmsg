@@ -109,7 +109,7 @@ const page = () => {
       }
     } catch (error) {
       const axiosError = error as AxiosError<ApiResponse>;
-    //   console.error("Error signing up", axiosError.response?.data);
+      //   console.error("Error signing up", axiosError.response?.data);
       errorToast({
         message: "Signup Failed",
         description:
@@ -122,71 +122,78 @@ const page = () => {
   };
 
   return (
-    <div className="min-h-screen bg-zinc-950 text-zinc-100 flex items-center justify-center px-4">
+    <div className="min-h-screen bg-zinc-50 dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 flex items-center justify-center px-4">
       {/* Auth Card Container */}
-      <div className="w-full max-w-md bg-zinc-900/80 border border-zinc-800 backdrop-blur-xl rounded-2xl shadow-2xl p-8">
+      <div className="w-full max-w-md bg-white/80 dark:bg-zinc-900/80 border border-zinc-200 dark:border-zinc-800 backdrop-blur-xl rounded-2xl shadow-2xl p-8">
         {/* Heading */}
         <div className="text-center mb-8">
-          <h1 className="text-2xl font-bold tracking-tight text-zinc-100">
+          <h1 className="text-2xl font-bold tracking-tight text-zinc-900 dark:text-zinc-100">
             Create account
           </h1>
-          <p className="text-sm tracking-wide text-zinc-400 mt-1">
+          <p className="text-sm tracking-wide text-zinc-600 dark:text-zinc-400 mt-1">
             Enter your credentials to continue
           </p>
         </div>
 
-        {/* --- FORM GOES HERE --- */}
+        {/* Form */}
         <div className="space-y-6">
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-              {/* using the old FormField(shadcn) and form(html)*/}
-
               <FormField
                 name="username"
                 control={form.control}
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Username</FormLabel>
+                    <FormLabel className="text-zinc-700 dark:text-zinc-300">
+                      Username
+                    </FormLabel>
                     <FormControl>
                       <Input
                         placeholder="username"
                         {...field}
                         onChange={(e) => {
-                          field.onChange(e); // did since we had below stmt requirement
-                          setUsername(e.target.value); // added since we have a different check as well
+                          field.onChange(e);
+                          setUsername(e.target.value);
                         }}
                       />
                     </FormControl>
-                    <FormDescription>
+
+                    <FormDescription className="text-zinc-600 dark:text-zinc-400">
                       This is your public display name
                     </FormDescription>
-                    {usernameMessage && usernameMessage.length > 0 && (
+
+                    {usernameMessage && (
                       <FormDescription
                         className={
-                          !usernameMessage.includes("Username Available")
-                            ? "text-red-500"
-                            : "text-green-500"
+                          usernameMessage.includes("Username Available")
+                            ? "text-green-600 dark:text-green-500"
+                            : "text-red-600 dark:text-red-500"
                         }
                       >
                         {usernameMessage}
                       </FormDescription>
                     )}
+
                     {isCheckingUsername && (
-                      <FormDescription className="flex items-center justify-start gap-1">
+                      <FormDescription className="flex items-center gap-1 text-zinc-600 dark:text-zinc-400">
                         <Spinner />
-                        <span className="mb-1">Checking Availability ...</span>
+                        <span>Checking availability...</span>
                       </FormDescription>
                     )}
+
                     <FormMessage />
                   </FormItem>
                 )}
               />
+
               <FormField
                 name="email"
                 control={form.control}
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Email</FormLabel>
+                    <FormLabel className="text-zinc-700 dark:text-zinc-300">
+                      Email
+                    </FormLabel>
                     <FormControl>
                       <Input placeholder="email" {...field} />
                     </FormControl>
@@ -194,12 +201,15 @@ const page = () => {
                   </FormItem>
                 )}
               />
+
               <FormField
                 name="password"
                 control={form.control}
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Password</FormLabel>
+                    <FormLabel className="text-zinc-700 dark:text-zinc-300">
+                      Password
+                    </FormLabel>
                     <FormControl>
                       <Input
                         type="password"
@@ -211,11 +221,15 @@ const page = () => {
                   </FormItem>
                 )}
               />
+
               <Button
                 type="submit"
-                variant={"default"}
                 disabled={isSubmitting}
-                className="py-5 text-md w-full text-zinc-900 flex items-center justify-center gap-2 font-medium"
+                className="
+                py-5 text-md w-full flex items-center justify-center gap-2 font-medium
+                bg-zinc-900 text-white hover:bg-zinc-800
+                dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-200
+              "
               >
                 {isSubmitting ? (
                   <>
@@ -232,24 +246,19 @@ const page = () => {
 
         {/* Divider */}
         <div className="flex items-center gap-3 my-8">
-          <div className="flex-1 h-px bg-zinc-800"></div>
+          <div className="flex-1 h-px bg-zinc-200 dark:bg-zinc-800"></div>
           <span className="text-xs text-zinc-500 uppercase tracking-wider">
             or continue with
           </span>
-          <div className="flex-1 h-px bg-zinc-800"></div>
+          <div className="flex-1 h-px bg-zinc-200 dark:bg-zinc-800"></div>
         </div>
 
-        {/* --- SOCIAL BUTTONS GO HERE --- */}
-        <div className="flex flex-col gap-3">
-          {/* Google / GitHub buttons */}
-        </div>
-
-        {/* Footer Links */}
-        <p className="mt-8 text-center text-sm text-zinc-500">
+        {/* Footer */}
+        <p className="mt-8 text-center text-sm text-zinc-600 dark:text-zinc-500">
           Already have an account?{" "}
           <a
             href="/sign-in"
-            className="text-zinc-300 hover:text-zinc-100 underline"
+            className="text-zinc-900 dark:text-zinc-300 hover:underline"
           >
             Sign In
           </a>
