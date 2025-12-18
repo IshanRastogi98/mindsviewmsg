@@ -155,12 +155,58 @@ const page = () => {
         </div>
 
         {/* Divider */}
-        <div className="flex items-center gap-3 my-8">
-          <div className="flex-1 h-px bg-zinc-200 dark:bg-zinc-800"></div>
-          <span className="text-xs text-zinc-500 uppercase tracking-wider">
-            or continue with
-          </span>
-          <div className="flex-1 h-px bg-zinc-200 dark:bg-zinc-800"></div>
+        <div className="my-10 space-y-6">
+          {/* Divider */}
+          <div className="flex items-center gap-4">
+            <div className="flex-1 h-px bg-zinc-200 dark:bg-zinc-800" />
+            <span className="text-xs font-medium text-zinc-500 uppercase tracking-wider">
+              or continue with
+            </span>
+            <div className="flex-1 h-px bg-zinc-200 dark:bg-zinc-800" />
+          </div>
+
+          {/* Google Button */}
+          <Button
+            onClick={() => signIn("google")}
+            variant="outline"
+            className="
+      w-full h-11
+      flex items-center justify-center gap-3
+      rounded-xl
+      border-zinc-300 dark:border-zinc-700
+      bg-white dark:bg-zinc-900
+      text-zinc-800 dark:text-zinc-100
+      hover:bg-zinc-100 dark:hover:bg-zinc-800
+      transition-colors
+    "
+          >
+            {/* Optional Google Icon */}
+            <svg
+              width="18"
+              height="18"
+              viewBox="0 0 48 48"
+              className="shrink-0"
+            >
+              <path
+                fill="#FFC107"
+                d="M43.6 20.1H42V20H24v8h11.3C33.7 32.6 29.3 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.9 1.2 8 3.1l5.7-5.7C34.2 6.1 29.4 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.7-.4-3.9z"
+              />
+              <path
+                fill="#FF3D00"
+                d="M6.3 14.7l6.6 4.8C14.7 16.1 19 12 24 12c3.1 0 5.9 1.2 8 3.1l5.7-5.7C34.2 6.1 29.4 4 24 4c-7.7 0-14.3 4.3-17.7 10.7z"
+              />
+              <path
+                fill="#4CAF50"
+                d="M24 44c5.2 0 10-2 13.6-5.3l-6.3-5.2c-1.7 1.3-4 2.1-7.3 2.1-5.2 0-9.6-3.3-11.2-7.9l-6.5 5c3.3 6.5 10 11.3 17.7 11.3z"
+              />
+              <path
+                fill="#1976D2"
+                d="M43.6 20.1H42V20H24v8h11.3c-1 2.7-3 5-5.7 6.5l6.3 5.2C39.6 36.3 44 30.8 44 24c0-1.3-.1-2.7-.4-3.9z"
+              />
+            </svg>
+
+            <span className="text-sm font-medium">Sign in with Google</span>
+          </Button>
         </div>
 
         {/* Footer Links */}

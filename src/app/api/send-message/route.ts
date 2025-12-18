@@ -57,17 +57,17 @@ export async function POST(request: Request) {
       return Response.json(
         {
           success: false,
-          message: "User not found",
+          message: "User not found or User is not Accepting the messages",
         },
-        { status: 404 }
+        { status: 403 }
       );
     }
     // is user accepting messages
-    if (!user.isAcceptingMessage) {
+    if (!user.isAcceptingMessages) {
       return Response.json(
         {
           success: false,
-          message: "User is not Accepting the messages",
+          message: "User not found or User is not Accepting the messages",
         },
         {
           status: 403,

@@ -84,6 +84,8 @@ export async function GET(request: Request) {
   await connectDB();
 
   const session = await getServerSession(authOptions);
+  // console.log("\n\nsession from a m -> ",session)
+
   const user: User = session?.user as User; // assertion as User
   if (!session || !session?.user) {
     return Response.json(
@@ -111,7 +113,7 @@ export async function GET(request: Request) {
         success: true,
         message: "Status Returning Successfully",
         user: foundUser,
-        isAcceptingMessage: foundUser.isAcceptingMessage,
+        isAcceptingMessage: foundUser.isAcceptingMessages,
       },
       { status: 200 }
     );

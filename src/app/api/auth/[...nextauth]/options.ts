@@ -3,10 +3,16 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
 import connectDB from "@/lib/dbConnect";
 import UserModel from "@/model/user";
+import GoogleProvider from "next-auth/providers/google"; // 1. Import GoogleProvider
 import Credentials from "next-auth/providers/credentials";
+import mongoose, { ObjectId } from "mongoose";
 
 export const authOptions: NextAuthOptions = {
   providers: [
+    GoogleProvider({
+      clientId: process.env.GOOGLE_CLIENT_ID!, // The '!' asserts that these are non-null
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+    }),
     CredentialsProvider({
       // You can specify more than one credentials provider by specifying a unique id for each one.
       //    else id is optional here
@@ -44,7 +50,7 @@ export const authOptions: NextAuthOptions = {
           if (!user) throw new Error("Username/Email or Password is wrong !!");
           if (!user.isVerified)
             throw new Error("Please Verify your Account first");
-          const passwordMatch = bcrypt.compare(
+          const passwordMatch = await bcrypt.compare(
             credentials.password,
             user.password
           );
@@ -58,13 +64,57 @@ export const authOptions: NextAuthOptions = {
     }),
   ],
   callbacks: {
+    async signIn({ user, account, profile }) {
+      // runs after signIn logics compleeion
+      if (account?.provider === "credentials") {
+        return true;
+      }
+      // This callback is triggered when a user signs in, either with credentials or OAuth
+      if (account?.provider === "google") {
+        // console.log("\n guser found", user);
+        await connectDB();
+        try {
+          const existingUser = await UserModel.findOne({ email: user.email });
+          // console.log("\nexistin guser foundexistingUser", existingUser, "\n");
+          if (!existingUser) {
+            // If the user doesn't exist, create a new user
+            const username = user.email!.split("@")[0]; // Basic username from email
+            const newUser = new UserModel({
+              username: `${username}_${Date.now()}`, // Append timestamp for uniqueness
+              email: user.email,
+              isVerified: true, // Google users are considered verified
+              messages: [],
+            });
+            const savedUser = await newUser.save();
+            user._id = savedUser._id.toString();
+          } else {
+            user._id = existingUser._id.toString();
+          }
+          return true; // Allow the sign-in
+        } catch (error) {
+          console.error("Error during Google sign-in:", error);
+          return false; // Prevent sign-in on error
+        }
+      }
+      // fix sign-in for  credentials
+      return true;
+    },
+
     // user-> what we returned the user from the async cred. authorize functn.
     async jwt({ token, user }) {
       if (user) {
-        token._id = user._id?.toString();
-        token.isVerified = user.isVerified;
-        token.isAcceptingMessages = user.isAcceptingMessages;
-        token.username = user.username;
+        await connectDB();
+
+        const dbUser = await UserModel.findOne({
+          _id: user._id,
+        });
+
+        if (dbUser) {
+          token._id = dbUser._id.toString();
+          token.username = dbUser.username;
+          token.isVerified = dbUser.isVerified;
+          token.isAcceptingMessages = dbUser.isAcceptingMessages;
+        }
       }
       return token;
     },
