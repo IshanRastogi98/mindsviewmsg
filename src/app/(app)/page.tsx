@@ -1,5 +1,4 @@
 "use client";
-import Navbar from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
 import {
   ArrowRight,
@@ -8,15 +7,8 @@ import {
   Send,
   Zap,
   ToggleRight,
-  User,
-  Sparkles,
-  RotateCw,
-  X,
 } from "lucide-react";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import {} from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import Marquee from "react-fast-marquee";
 import { heroMarqueeFeatures } from "@/lib/heroMarquee/features";
 import { heroMarqueeTrust } from "@/lib/heroMarquee/trust";
@@ -24,80 +16,10 @@ import Image from "next/image";
 import Link from "next/link";
 import { Separator } from "@/components/ui/separator";
 import { LucideIcon } from "lucide-react";
-import { useState } from "react";
-import { Spinner } from "@/components/ui/spinner";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
-import { useSession } from "next-auth/react";
 import Footer from "@/components/Footer";
-import { Skeleton } from "@/components/ui/skeleton";
 import MainFeature from "@/components/MainFeature";
 
 export default function Home() {
-  // const { data: session } = useSession();
-  // if (session === undefined) {
-  //   return (
-  //     <>
-  //       <main className="w-full overflow-hidden">
-  //         {/* ================= HERO SECTION ================= */}
-  //         <section className="relative min-h-[90vh] flex items-center justify-center px-6">
-  //           <div className="w-full max-w-6xl flex flex-col items-center gap-10">
-  //             {/* Hero Text */}
-  //             <div className="w-full flex flex-col items-center gap-6 text-center">
-  //               {/* Heading */}
-  //               <Skeleton className="h-14 w-3/4 max-w-xl rounded-xl" />
-  //               <Skeleton className="h-14 w-2/4 max-w-xl rounded-xl" />
-
-  //               {/* Subheading */}
-  //               <Skeleton className="h-5 w-2/3 max-w-md rounded-lg" />
-
-  //               {/* CTA Buttons */}
-  //               <div className="flex gap-4 mt-4">
-  //                 <Skeleton className="h-12 w-36 rounded-xl" />
-  //                 <Skeleton className="h-12 w-36 rounded-xl" />
-  //               </div>
-  //             </div>
-  //           </div>
-  //         </section>
-  //         <section className="mt-24 relative min-h-[70vh] px-6 -mb-20">
-  //           {/* ================= MARQUEE 1 ================= */}
-  //           <Skeleton className="h-20 w-full rounded-xl mt-12" />
-
-  //           {/* ================= MARQUEE 2 ================= */}
-  //           <Skeleton className="h-20 w-full rounded-xl mt-4" />
-  //         </section>
-  //         {/* ================= PREVIEW / FEATURE SECTION ================= */}
-  //         <MainFeature />
-
-  //         {/* ================= HOW IT WORKS ================= */}
-  //         <section className="w-full py-24 px-6 flex justify-center">
-  //           <div className="w-full max-w-6xl grid grid-cols-1 md:grid-cols-3 gap-8">
-  //             <Skeleton className="h-48 rounded-2xl" />
-  //             <Skeleton className="h-48 rounded-2xl" />
-  //             <Skeleton className="h-48 rounded-2xl" />
-  //           </div>
-  //         </section>
-
-  //         {/* ================= FINAL CTA ================= */}
-  //         <section className="w-full py-28 px-6 flex justify-center">
-  //           <div className="w-full max-w-4xl flex flex-col items-center gap-6 text-center">
-  //             <Skeleton className="h-14 w-3/4 rounded-xl" />
-  //             <Skeleton className="h-6 w-1/2 rounded-lg" />
-  //             <Skeleton className="h-12 w-44 rounded-xl mt-4" />
-  //           </div>
-  //         </section>
-
-  //         {/* ================= FOOTER SKELETON ================= */}
-  //         <footer className="w-full py-12 px-6 flex justify-center">
-  //           <Skeleton className="h-28 w-full max-w-6xl rounded-2xl" />
-  //         </footer>
-  //       </main>
-  //     </>
-  //   );
-  // }
   return (
     <main className="w-full overflow-hidden bg-zinc-50 dark:bg-zinc-950">
       {/* ================= HERO SECTION ================= */}
