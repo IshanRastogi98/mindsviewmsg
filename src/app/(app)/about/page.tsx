@@ -30,10 +30,10 @@ export default function AboutPage() {
           <p className="text-base md:text-lg text-zinc-500 dark:text-zinc-500 max-w-2xl mx-auto">
             We're here{" "}
             <Link
-              href={"/u/mystrymsgir"}
+              href={"/u/mindsviewmsgir"}
               className="text-zinc-600 dark:text-zinc-200 hover:text-zinc-800 dark:hover:text-zinc-100 underline"
             >
-              @mystrymsgir
+              @mindsviewmsgir
             </Link>
             , feel free to share a thought.
           </p>

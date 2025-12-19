@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import { useSession } from "next-auth/react";
 import { Skeleton } from "./ui/skeleton";
+import { Branding } from "./Navbar";
 
 export default function Footer() {
   const { data: session } = useSession();
@@ -33,12 +34,8 @@ export default function Footer() {
         <div className="grid grid-cols-1 gap-10 md:grid-cols-3">
           {/* ================= LEFT : BRAND ================= */}
           <div className="flex flex-col gap-4">
-            <Link
-              href="/"
-              className="text-xl font-bold text-zinc-900 dark:text-zinc-100"
-            >
-              MystryMsg
-            </Link>
+            <Branding classname="text-xl" />
+
             <div className="text-sm md:text-md lg:text-lg font-semibold tracking-tight text-zinc-900 dark:text-zinc-100">
               Say Anything.
               <span className="block text-zinc-600 dark:text-zinc-400">
@@ -116,7 +113,7 @@ export default function Footer() {
         {/* ================= BOTTOM STRIP ================= */}
         <div className="mt-10 border-t border-zinc-300/40 dark:border-white/10 pt-6 text-center">
           <p className="text-xs text-zinc-500 dark:text-zinc-400">
-            © {new Date().getFullYear()} MystryMsg. All rights reserved.
+            © {new Date().getFullYear()} MindsViewMsg. All rights reserved.
           </p>
         </div>
       </motion.div>

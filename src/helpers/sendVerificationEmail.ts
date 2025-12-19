@@ -54,7 +54,7 @@ export async function sendVerificationEmailBrevo(
       body: JSON.stringify({
         sender: {
           name: "MindsViewMsg",
-          email: process.env.BREVO_SENDER_EMAIL!, // e.g. noreply@mystrymsg.com
+          email: process.env.BREVO_SENDER_EMAIL!, // e.g. noreply@mindsviewmsg.com
         },
         to: [{ email }],
         subject: "MindsViewMsg | Verification Code",

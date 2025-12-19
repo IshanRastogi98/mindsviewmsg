@@ -138,7 +138,7 @@ export default function Home() {
               >
                 <Link href="/#main-feature">
                   <LinkIcon className="w-4 h-4" />
-                  View demoṅ
+                  View demo
                 </Link>
               </Button>
             </div>
@@ -214,9 +214,15 @@ export default function Home() {
                   message and sends it — no account, no login, no identity.
                 </p>
 
-                {/* Image placeholder */}
-                <div className="h-32 rounded-xl bg-zinc-200/60 dark:bg-zinc-800/60 border border-dashed border-zinc-300 dark:border-zinc-700 flex items-center justify-center text-xs text-zinc-500">
-                  Image: username input + message box
+                {/* Image */}
+                <div className="h-32 rounded-xl bg-white border border-zinc-200 dark:border-zinc-700 flex items-center justify-center overflow-hidden">
+                  <Image
+                    src="/anonymity.webp"
+                    alt="Anonymous and privacy-safe messaging"
+                    width={96}
+                    height={96}
+                    className="object-contain opacity-90 group-hover:opacity-100 transition-opacity"
+                  />
                 </div>
               </div>
             </motion.div>
@@ -243,8 +249,14 @@ export default function Home() {
                   delays, no queues.
                 </p>
 
-                <div className="h-32 rounded-xl bg-zinc-200/60 dark:bg-zinc-800/60 border border-dashed border-zinc-300 dark:border-zinc-700 flex items-center justify-center text-xs text-zinc-500">
-                  Image: message appearing instantly in inbox
+                <div className="h-32 rounded-xl bg-white border border-zinc-200 dark:border-zinc-700 flex items-center justify-center overflow-hidden">
+                  <Image
+                    src="/fast-delivery.webp"
+                    alt="Illustration representing instant message delivery with no delays"
+                    width={96}
+                    height={96}
+                    className="object-contain opacity-80 group-hover:opacity-100 transition-opacity"
+                  />
                 </div>
               </div>
             </motion.div>
@@ -271,8 +283,14 @@ export default function Home() {
                   toggle lets them pause or resume anytime.
                 </p>
 
-                <div className="h-32 rounded-xl bg-zinc-200/60 dark:bg-zinc-800/60 border border-dashed border-zinc-300 dark:border-zinc-700 flex items-center justify-center text-xs text-zinc-500">
-                  Image: inbox with accept-messages toggle
+                <div className="h-32 rounded-xl bg-white border border-zinc-200 dark:border-zinc-700 flex items-center justify-center overflow-hidden">
+                  <Image
+                    src="/controlled-toggle.webp"
+                    alt="Illustration showing user-controlled message acceptance toggle"
+                    width={96}
+                    height={96}
+                    className="object-contain opacity-80 group-hover:opacity-100 transition-opacity"
+                  />
                 </div>
               </div>
             </motion.div>
@@ -386,7 +404,7 @@ export const HeroMarquee = ({ list, direction = "left" }: HeroMarqueeProps) => {
       whileInView={{ opacity: 1, y: 0, x: 0 }}
       transition={{ duration: 0.6, ease: "easeOut" }}
       viewport={{ once: true }}
-      className="w-full space-y-5 mt-6 relative overflow-hidden"
+      className="w-full select-none space-y-5 mt-6 relative overflow-hidden"
     >
       <Marquee
         speed={60}

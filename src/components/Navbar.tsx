@@ -43,20 +43,59 @@ const Navbar = () => {
     { name: "Messaging", href: "/u", icon: MessageCircle },
     { name: "About", href: "/about", icon: Users },
   ];
-  if (session === undefined)
-    return (
-      <Skeleton className="w-full sticky top-0 z-50 border-b h-16 border-zinc-300 dark:border-zinc-800 bg-zinc-100/80 dark:bg-zinc-900/80 backdrop-blur-lg" />
-    );
+
+  const authBasedButtonGroup = () => {
+    if (user) {
+      return (
+        <>
+          <Link href="/dashboard">
+            <Button
+              variant="outline"
+              className="border-zinc-300 dark:border-zinc-700 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-zinc-800"
+            >
+              <Layers className="w-4 h-4 mr-1" />
+              Dashboard
+            </Button>
+          </Link>
+
+          <Button
+            variant="destructive"
+            onClick={() => signOut()}
+            className="flex items-center gap-2"
+          >
+            <LogOut className="w-4 h-4" />
+            Log Out
+          </Button>
+        </>
+      );
+    } else {
+      return (
+        <>
+          <Link href="/sign-in">
+            <Button
+              variant="outline"
+              className="border-zinc-300 dark:border-zinc-700 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-zinc-800"
+            >
+              <LogIn className="w-4 h-4 mr-1" />
+              Sign In
+            </Button>
+          </Link>
+
+          <Link href="/sign-up">
+            <Button className="bg-zinc-800 dark:bg-zinc-100 text-zinc-100 dark:text-zinc-900 hover:bg-zinc-700 dark:hover:bg-zinc-200">
+              Sign Up
+            </Button>
+          </Link>
+        </>
+      );
+    }
+  };
+
   return (
     <nav className="w-full sticky top-0 z-50 border-b border-zinc-300 dark:border-zinc-800 bg-zinc-100/80 dark:bg-zinc-900/80 backdrop-blur-lg">
       <div className="mx-auto w-full max-w-5xl px-4 h-16 flex items-center justify-between">
         {/* Brand */}
-        <Link
-          href="/"
-          className="font-bold text-xl tracking-tight text-zinc-800 dark:text-zinc-200"
-        >
-          MysteryMsg
-        </Link>
+        <Branding />
 
         {/* Desktop Nav */}
         <div className="hidden md:flex items-center gap-3">
@@ -85,68 +124,31 @@ const Navbar = () => {
         {/* Desktop Auth */}
         <div className="hidden md:flex gap-3">
           {/* Theme Toggle */}
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="outline" size="icon">
-                <Sun className="h-5 w-5 dark:hidden" />
-                <Moon className="h-5 w-5 hidden dark:inline" />
-                <span className="sr-only">Toggle theme</span>
-              </Button>
-            </DropdownMenuTrigger>
-
-            <DropdownMenuContent align="end">
-              <DropdownMenuItem onClick={() => setTheme("light")}>
-                Light
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => setTheme("dark")}>
-                Dark
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => setTheme("system")}>
-                System
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-
-          {!user ? (
-            <>
-              <Link href="/sign-in">
-                <Button
-                  variant="outline"
-                  className="border-zinc-300 dark:border-zinc-700 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-zinc-800"
-                >
-                  <LogIn className="w-4 h-4 mr-1" />
-                  Sign In
+          <>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" size="icon">
+                  <Sun className="h-5 w-5 dark:hidden" />
+                  <Moon className="h-5 w-5 hidden dark:inline" />
+                  <span className="sr-only">Toggle theme</span>
                 </Button>
-              </Link>
+              </DropdownMenuTrigger>
 
-              <Link href="/sign-up">
-                <Button className="bg-zinc-800 dark:bg-zinc-100 text-zinc-100 dark:text-zinc-900 hover:bg-zinc-700 dark:hover:bg-zinc-200">
-                  Sign Up
-                </Button>
-              </Link>
-            </>
-          ) : (
-            <>
-              <Link href="/dashboard">
-                <Button
-                  variant="outline"
-                  className="border-zinc-300 dark:border-zinc-700 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-zinc-800"
-                >
-                  <Layers className="w-4 h-4 mr-1" />
-                  Dashboard
-                </Button>
-              </Link>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem onClick={() => setTheme("light")}>
+                  Light
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setTheme("dark")}>
+                  Dark
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setTheme("system")}>
+                  System
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
 
-              <Button
-                variant="destructive"
-                onClick={() => signOut()}
-                className="flex items-center gap-2"
-              >
-                <LogOut className="w-4 h-4" />
-                Log Out
-              </Button>
-            </>
-          )}
+            {authBasedButtonGroup()}
+          </>
         </div>
         {/* Theme Toggle */}
         <div className="md:hidden absolute right-16">
@@ -316,3 +318,26 @@ const Navbar = () => {
 };
 
 export default Navbar;
+
+import Image from "next/image";
+
+export const Branding = ({ classname }: { classname?: string }) => {
+  return (
+    <Link href="/" className="flex items-center gap-1 select-none ">
+      <Image
+        src="/logo.webp" // put logo in /public
+        alt="MindsViewMsg logo"
+        width={20}
+        height={20}
+        className="rounded-full inline-block "
+        priority
+      />
+      <span
+        className={`font-bold text-xl tracking-tight text-zinc-800 dark:text-zinc-200 
+         ${classname ? classname : ""}`}
+      >
+        MindsViewMsg
+      </span>
+    </Link>
+  );
+};
