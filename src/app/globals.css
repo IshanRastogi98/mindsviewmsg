@@ -123,3 +123,18 @@
 html {
   scroll-behavior: smooth;
 }
+
+.fade-in {
+  animation: fade 0.4s ease forwards;
+}
+
+@keyframes fade {
+  from {
+    opacity: 0.8;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

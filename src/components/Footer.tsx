@@ -10,27 +10,14 @@ import {
   ArrowUpRight,
 } from "lucide-react";
 import { useSession } from "next-auth/react";
-import { Skeleton } from "./ui/skeleton";
 import { Branding } from "./Navbar";
 
 export default function Footer() {
   const { data: session } = useSession();
-  if (session === undefined) {
-    return (
-      <footer className="w-full py-12 px-6 flex justify-center">
-        <Skeleton className="h-28 w-full max-w-6xl rounded-2xl" />
-      </footer>
-    );
-  }
+
   return (
     <footer className="w-full px-6 pb-10">
-      <motion.div
-        initial={{ opacity: 0, y: 30 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6, ease: "easeOut" }}
-        viewport={{ once: true }}
-        className="mx-auto max-w-6xl rounded-[28px] bg-white/60 dark:bg-zinc-900/60 backdrop-blur-2xl border border-zinc-300/40 dark:border-white/10 shadow-[0_20px_60px_rgba(0,0,0,0.12)] px-8 py-10"
-      >
+      <div className="mx-auto max-w-6xl rounded-[28px] bg-white/60 dark:bg-zinc-900/60 backdrop-blur-2xl border border-zinc-300/40 dark:border-white/10 shadow-[0_20px_60px_rgba(0,0,0,0.12)] px-8 py-10 fade-in">
         <div className="grid grid-cols-1 gap-10 md:grid-cols-3">
           {/* ================= LEFT : BRAND ================= */}
           <div className="flex flex-col gap-4">
@@ -116,7 +103,7 @@ export default function Footer() {
             © {new Date().getFullYear()} MindsViewMsg. All rights reserved.
           </p>
         </div>
-      </motion.div>
+      </div>
     </footer>
   );
 }

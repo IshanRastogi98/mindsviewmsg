@@ -1,12 +1,9 @@
 "use client";
-import { useSession } from "next-auth/react";
 import { Button } from "@/components/ui/button";
 import {
   Send,
   Sparkles,
-  RotateCw,
   X,
-  BadgeCheck,
   BadgeCheckIcon,
   UserRoundPen,
   Sparkle,
@@ -14,7 +11,6 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { motion, AnimatePresence } from "framer-motion";
-import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Spinner } from "@/components/ui/spinner";
 import {
@@ -22,7 +18,6 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "./ui/badge";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -41,13 +36,8 @@ import {
 } from "./ui/form";
 import { useRouter } from "next/navigation";
 import { descriptionSchema } from "@/schemas/descriptionSchema";
-import {
-  experimental_useObject as useObject,
-  useCompletion,
-} from "@ai-sdk/react";
 import { Session } from "next-auth";
 import {
-  messageSuggestionSchema,
   suggestionSchema,
 } from "@/schemas/messageSuggestionSchema";
 
@@ -56,7 +46,6 @@ type MainFeatureProps = {
   username?: string;
   allowEdit?: boolean;
 };
-const isDev = process.env.NODE_ENV !== "production";
 
 const MainFeature = ({
   username = "",
@@ -267,7 +256,7 @@ const MainFeature = ({
       className="
     w-full
     flex items-center justify-center
-    px-6 py-28
+    px-6 pt-18 py-28
     bg-zinc-50 dark:bg-[#0a0a0a]
     overflow-hidden
   "

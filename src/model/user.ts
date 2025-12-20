@@ -25,6 +25,8 @@ export interface User extends Document {
   verifyCodeExpiry: Date;
   isAcceptingMessages: boolean;
   isVerified: boolean;
+  resetToken?: string;
+  resetTokenExpiry?: Date;
   messages: Message[];
 }
 
@@ -65,6 +67,12 @@ const UserSchema: Schema<User> = new Schema({
   isAcceptingMessages: {
     type: Boolean,
     default: true,
+  },
+  resetToken: {
+    type: String,
+  },
+  resetTokenExpiry: {
+    type: Date,
   },
   messages: [MessageSchema],
 });

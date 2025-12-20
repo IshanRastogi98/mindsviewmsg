@@ -1,6 +1,5 @@
 "use client";
 
-import React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useSession, signOut } from "next-auth/react";
@@ -29,7 +28,6 @@ import {
   Sun,
   Users,
 } from "lucide-react";
-import { Skeleton } from "./ui/skeleton";
 
 const Navbar = () => {
   const { data: session } = useSession();

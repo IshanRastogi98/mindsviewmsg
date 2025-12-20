@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/tooltip";
 
 export function CopyTextButton({ text }: { text: string }) {
-  const [copiedText, copy] = useCopyToClipboard();
+  const [, copy] = useCopyToClipboard();
   const [copied, setCopied] = useState(false);
   //   Clipboard Fallback
   // The BIG problem with
