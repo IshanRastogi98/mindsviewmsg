@@ -5,15 +5,7 @@ import UserModel from "@/model/user";
 import bcrypt from "bcryptjs";
 import { NextResponse } from "next/server";
 import { ApiResponse } from "@/types/ApiResponse";
-
-const resetPasswordSchema = z.object({
-  token: z
-    .string()
-    .length(64, "Invalid token")
-    .regex(/^[0-9a-f]{64}$/, "Invalid token format"),
-  newPassword: passwordValidation,
-  username: usernameValidation,
-});
+import { resetPasswordSchema } from "@/schemas/resetPasswordSchemas";
 
 export async function POST(
   request: Request,

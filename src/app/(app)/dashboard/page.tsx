@@ -288,12 +288,12 @@ const page = () => {
               mt-2 text-sm font-mono
               text-zinc-800 dark:text-zinc-100
               bg-zinc-100 dark:bg-zinc-900
-              rounded-lg px-3 py-2
+              rounded-lg px-3 py-2 gap-2
               border border-zinc-200 dark:border-zinc-700
               flex w-full justify-between items-center
             "
           >
-            <span>{profileUrl}</span>
+            <span className="break-all text-wrap flex-1">{profileUrl}</span>
             <CopyTextButton text={profileUrl} />
           </div>
         </div>

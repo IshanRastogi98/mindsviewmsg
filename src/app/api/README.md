@@ -1,616 +1,400 @@
-## API Route: `/api/accept-messages`
+# API Documentation
 
-**HTTP Methods:** `POST`, `GET`
+## Overview
 
-**Purpose:**
+This document provides detailed information about the API endpoints for the MystryMsg application.
 
-*   `POST`: Updates the user's message acceptance status.
-*   `GET`: Retrieves the user's message acceptance status.
+## Authentication & Security
 
-**Request Details:**
+Most routes require user authentication via a session token managed by NextAuth.js. Authenticated routes will return a `401 Unauthorized` status code if the session token is missing or invalid.
 
-*   **Authentication:** Required (uses `next-auth` session).
-*   **POST Request Body:**
+Specific security measures, such as rate limiting, are detailed in the documentation for each route.
+
+## Routes
+
+### Authentication
+
+#### User Registration
+
+-   **Method**: `POST`
+-   **Endpoint**: `/api/sign-up`
+-   **Purpose**: To register a new user in the system. A verification code is sent to the user's email upon successful registration.
+-   **Authentication**: Not required.
+-   **Request Body**:
+    ```json
+    {
+      "username": "john-doe",
+      "email": "john.doe@example.com",
+      "password": "strongpassword123"
+    }
+    ```
+    -   `username`: A unique identifier for the user.
+    -   `email`: The user's email address.
+    -   `password`: The user's password.
+-   **Response**:
+    -   **Success (201)**:
+        ```json
+        {
+          "success": true,
+          "message": "User Registered Successfully and Verification Email sent"
+        }
+        ```
+    -   **Error (400)**: Bad Request. The request body is missing required fields or the username/email is already taken.
+    -   **Error (500)**: Internal Server Error. An error occurred while registering the user or sending the verification email.
+-   **Security Notes**:
+    -   This endpoint checks for existing verified users to prevent username and email duplication.
+    -   If an unverified user with the same email exists, it updates the user's details and sends a new verification code.
+
+#### Verify User
+
+-   **Method**: `POST`
+-   **Endpoint**: `/api/verify-code`
+-   **Purpose**: To verify a user's account using the verification code sent to their email.
+-   **Authentication**: Not required.
+-   **Request Body**:
+    ```json
+    {
+      "username": "john-doe",
+      "email": "john.doe@example.com",
+      "verifyCode": "123456"
+    }
+    ```
+    -   `username`: The username of the user to verify.
+    -   `email`: The email of the user to verify.
+    -   `verifyCode`: The 6-digit verification code.
+-   **Response**:
+    -   **Success (200)**:
+        ```json
+        {
+          "success": true,
+          "message": "User Verified Successfully"
+        }
+        ```
+    -   **Error (400)**: Bad Request. The verification code has expired.
+    -   **Error (401)**: Unauthorized. The verification code is incorrect.
+    -   **Error (404)**: Not Found. The user was not found.
+    -   **Error (429)**: Too Many Requests. The user has made too many verification attempts. The `Retry-After` header indicates when to try again.
+    -   **Error (500)**: Internal Server Error.
+-   **Security Notes**:
+    -   This endpoint is rate-limited to prevent brute-force attacks on the verification code.
+    -   The verification code expires after a certain period (e.g., 1 hour).
+
+#### Forgot Password
+
+-   **Method**: `POST`
+-   **Endpoint**: `/api/forgot-password/send-verification-link`
+-   **Purpose**: To initiate the password reset process by sending a reset link to the user's email.
+-   **Authentication**: Not required.
+-   **Request Body**:
+    ```json
+    {
+      "rawIdentifier": "john-doe"
+    }
+    ```
+    -   `rawIdentifier`: The username or email of the user.
+-   **Response**:
+    -   **Success (200)**:
+        ```json
+        {
+          "success": true,
+          "message": "Reset Password Request Successfully, if the user exists"
+        }
+        ```
+    -   **Error (400)**: Bad Request. The request body is invalid.
+    -   **Error (404)**: Not Found. The user was not found.
+    -   **Error (500)**: Internal Server Error.
+-   **Security Notes**:
+    -   To prevent user enumeration, the endpoint returns a success message even if the user does not exist.
+    -   The reset token sent to the user's email is time-limited (e.g., 1 hour).
+
+#### Reset Password
+
+-   **Method**: `POST`
+-   **Endpoint**: `/api/reset-password/{username}`
+-   **Purpose**: To reset the user's password using a valid reset token.
+-   **Authentication**: Not required.
+-   **Request Body**:
+    ```json
+    {
+      "newPassword": "newstrongpassword123"
+    }
+    ```
+    -   `newPassword`: The new password for the user.
+-   **Query Parameters**:
+    -   `token`: The password reset token received via email.
+-   **Response**:
+    -   **Success (200)**:
+        ```json
+        {
+          "success": true,
+          "message": "Password reset successfully"
+        }
+        ```
+    -   **Error (400)**: Bad Request. The new password is invalid, or the reset token is invalid or expired.
+    -   **Error (404)**: Not Found. The user was not found.
+    -   **Error (500)**: Internal Server Error.
+-   **Security Notes**:
+    -   The reset token is single-use and expires after a short period.
+    -   The user is required to provide their username in the URL, and the token is validated against the user.
+
+### User
+
+#### Get Current User
+
+-   **Method**: `GET`
+-   **Endpoint**: `/api/me`
+-   **Purpose**: To retrieve the details of the currently authenticated user.
+-   **Authentication**: Required (session token).
+-   **Response**:
+    -   **Success (200)**:
+        ```json
+        {
+          "success": true,
+          "message": "User found",
+          "user": {
+            "username": "john-doe",
+            "email": "john.doe@example.com",
+            "isVerified": true,
+            "isAcceptingMessages": true
+          }
+        }
+        ```
+    -   **Error (401)**: Unauthorized. The user is not authenticated.
+    -   **Error (404)**: Not Found. The user was not found.
+    -   **Error (500)**: Internal Server Error.
+
+#### Get User Profile
+
+-   **Method**: `GET`
+-   **Endpoint**: `/api/user-profile/{username}`
+-   **Purpose**: To retrieve the public profile of a user.
+-   **Authentication**: Not required.
+-   **Response**:
+    -   **Success (200)**:
+        ```json
+        {
+          "success": true,
+          "message": "User found",
+          "user": {
+            "username": "jane-doe",
+            "isVerified": true,
+            "isAcceptingMessages": true
+          }
+        }
+        ```
+    -   **Error (400)**: Bad Request. The username is invalid.
+    -   **Error (404)**: Not Found. The user was not found.
+    -   **Error (500)**: Internal Server Error.
+
+#### Check Username Uniqueness
+
+-   **Method**: `GET`
+-   **Endpoint**: `/api/check-username-unique`
+-   **Purpose**: To check if a username is available.
+-   **Authentication**: Not required.
+-   **Query Parameters**:
+    -   `username`: The username to check.
+-   **Response**:
+    -   **Success (200)**:
+        ```json
+        {
+          "success": true,
+          "message": "Username Available"
+        }
+        ```
+    -   **Error (400)**: Bad Request. The username is invalid or already taken.
+    -   **Error (429)**: Too Many Requests.
+    -   **Error (500)**: Internal Server Error.
+-   **Security Notes**:
+    -   This endpoint is rate-limited.
+
+#### Change Password
+
+-   **Method**: `POST`
+-   **Endpoint**: `/api/change-password/{username}`
+-   **Purpose**: To change the password for the authenticated user.
+-   **Authentication**: Required (session token). The username in the URL must match the authenticated user.
+-   **Request Body**:
+    ```json
+    {
+      "oldPassword": "oldstrongpassword123",
+      "newPassword": "newstrongpassword456"
+    }
+    ```
+-   **Response**:
+    -   **Success (200)**:
+        ```json
+        {
+          "success": true,
+          "message": "Password updated Successfully"
+        }
+        ```
+    -   **Error (400)**: Bad Request. The request body is invalid.
+    -   **Error (401)**: Unauthorized. The old password is incorrect or the user is not authenticated.
+    -   **Error (404)**: Not Found. The user was not found.
+    -   **Error (500)**: Internal Server Error.
+
+### Messages
+
+#### Get Messages
+
+-   **Method**: `GET`
+-   **Endpoint**: `/api/get-messages`
+-   **Purpose**: To retrieve all messages for the authenticated user.
+-   **Authentication**: Required (session token).
+-   **Response**:
+    -   **Success (200)**:
+        ```json
+        {
+          "success": true,
+          "message": "Fetched messages successfully",
+          "messages": [
+            {
+              "content": "This is a test message.",
+              "createdAt": "2023-10-27T10:00:00Z"
+            }
+          ]
+        }
+        ```
+    -   **Error (401)**: Unauthorized. The user is not authenticated.
+    -   **Error (404)**: Not Found. The user was not found.
+    -   **Error (500)**: Internal Server Error.
+
+#### Send Message
+
+-   **Method**: `POST`
+-   **Endpoint**: `/api/send-message`
+-   **Purpose**: To send a message to a user.
+-   **Authentication**: Not required.
+-   **Request Body**:
+    ```json
+    {
+      "username": "john-doe",
+      "content": "This is a test message."
+    }
+    ```
+    -   `username`: The username of the recipient.
+    -   `content`: The content of the message.
+-   **Response**:
+    -   **Success (200)**:
+        ```json
+        {
+          "success": true,
+          "message": "Message Sent Successfully"
+        }
+        ```
+    -   **Error (400)**: Bad Request. The request body is invalid.
+    -   **Error (403)**: Forbidden. The user is not accepting messages.
+    -   **Error (429)**: Too Many Requests. The sender has sent too many messages.
+    -   **Error (500)**: Internal Server Error.
+-   **Security Notes**:
+    -   This endpoint is rate-limited by the sender's IP address or user ID to prevent spam.
+
+#### Delete Message
+
+-   **Method**: `DELETE`
+-   **Endpoint**: `/api/delete-message/{message_id}`
+-   **Purpose**: To delete a specific message for the authenticated user.
+-   **Authentication**: Required (session token).
+-   **Response**:
+    -   **Success (200)**:
+        ```json
+        {
+          "success": true,
+          "message": "Message Deleted successfully"
+        }
+        ```
+    -   **Error (400)**: Bad Request. The message ID is invalid.
+    -   **Error (401)**: Unauthorized. The user is not authenticated.
+    -   **Error (404)**: Not Found. The message was not found or has already been deleted.
+    -   **Error (500)**: Internal Server Error.
+
+#### Toggle Message Acceptance
+
+-   **Method**: `POST`, `GET`
+-   **Endpoint**: `/api/accept-messages`
+-   **Purpose**:
+    -   `POST`: To enable or disable accepting messages for the authenticated user.
+    -   `GET`: To check if the authenticated user is currently accepting messages.
+-   **Authentication**: Required (session token).
+-   **Request Body (POST only)**:
     ```json
     {
       "acceptMessages": true
     }
     ```
-
-**Response Details:**
-
-*   **Content-Type:** `application/json`
-*   **POST Success Response:**
-    ```json
-    {
-      "success": true,
-      "message": "Status Updated Successfully",
-      "user": {
-        
-      }
-    }
-    ```
-*   **GET Success Response:**
-    ```json
-    {
-      "success": true,
-      "message": "Status Returning Successfully",
-      "user": {
-        
-      },
-      "isAcceptingMessage": true
-    }
-    ```
-*   **Error Response:**
-    ```json
-    {
-      "success": false,
-      "message": "Error message"
-    }
-    ```
-
-**Status Codes:**
-
-*   `200 OK`
-*   `400 Bad Request`
-*   `401 Unauthorized`
-*   `404 Not Found`
-*   `500 Internal Server Error`
-
----
-
-## API Route: `/api/auth/[...nextauth]`
-
-**HTTP Methods:** `GET`, `POST`
-
-**Purpose:**
-
-Handles all authentication-related requests for NextAuth.js, including sign-in, sign-out, session management, and callbacks. This route is managed by the NextAuth.js library.
-
-**Request Details:**
-
-*   **Authentication:** This is the authentication endpoint itself.
-*   **Request Body:** The request body and query parameters are determined by the specific NextAuth.js flow being used (e.g., OAuth, Credentials).
-
-**Response Details:**
-
-*   **Content-Type:** `application/json` / `text/html` (depending on the flow)
-*   **Response:** The response is managed by NextAuth.js and will vary depending on the authentication action being performed.
-
-**Status Codes:**
-
-The status codes are managed by NextAuth.js and will vary depending on the authentication action.
-
----
-
-## API Route: `/api/check-username-unique`
-
-**HTTP Methods:** `GET`
-
-**Purpose:**
-
-*   `GET`: Checks if a username is unique and available.
-
-**Request Details:**
-
-*   **Authentication:** Not strictly required, but uses session user ID or IP for rate limiting.
-*   **Query Parameters:**
-    *   `username`: The username to check.
-
-**Response Details:**
-
-*   **Content-Type:** `application/json`
-*   **Success Response:**
-    ```json
-    {
-      "success": true,
-      "message": "Username Available"
-    }
-    ```
-*   **Error Response:**
-    ```json
-    {
-      "success": false,
-      "message": "Error message"
-    }
-    ```
-
-**Status Codes:**
-
-*   `200 OK`
-*   `400 Bad Request`
-*   `429 Too Many Requests`
-*   `500 Internal Server Error`
-
----
-
-## API Route: `/api/delete-message/[message_id]`
-
-**HTTP Methods:** `DELETE`
-
-**Purpose:**
-
-*   `DELETE`: Deletes a specific message from a user's message list.
-
-**Request Details:**
-
-*   **Authentication:** Required (uses `next-auth` session).
-*   **URL Parameters:**
-    *   `message_id`: The ID of the message to be deleted.
-
-**Response Details:**
-
-*   **Content-Type:** `application/json`
-*   **Success Response:**
-    ```json
-    {
-      "success": true,
-      "message": "Message Deleted successfully"
-    }
-    ```
-*   **Error Response:**
-    ```json
-    {
-      "success": false,
-      "message": "Error message"
-    }
-    ```
-
-**Status Codes:**
-
-*   `200 OK`
-*   `400 Bad Request`
-*   `401 Unauthorized`
-*   `404 Not Found`
-*   `500 Internal Server Error`
-
----
-
-## API Route: `/api/get-messages`
-
-**HTTP Methods:** `GET`
-
-**Purpose:**
-
-*   `GET`: Retrieves all messages for the authenticated user.
-
-**Request Details:**
-
-*   **Authentication:** Required (uses `next-auth` session).
-
-**Response Details:**
-
-*   **Content-Type:** `application/json`
-*   **Success Response:**
-    ```json
-    {
-      "success": true,
-      "message": "Fetched messages successfully",
-      "messages": [
+    -   `acceptMessages`: A boolean value to set the message acceptance status.
+-   **Response (POST)**:
+    -   **Success (200)**:
+        ```json
         {
-          "_id": "message_id",
-          "content": "message content",
-          "createdAt": "2024-01-01T00:00:00.000Z"
+          "success": true,
+          "message": "Status Updated Successfully",
+          "user": { ... }
         }
-      ]
-    }
-    ```
-*   **Error Response:**
+        ```
+    -   **Error (400)**: Bad Request. The request body is invalid.
+    -   **Error (401)**: Unauthorized. The user is not authenticated.
+    -   **Error (404)**: Not Found. The user was not found.
+    -   **Error (500)**: Internal Server Error.
+-   **Response (GET)**:
+    -   **Success (200)**:
+        ```json
+        {
+          "success": true,
+          "message": "Status Returning Successfully",
+          "user": { ... },
+          "isAcceptingMessage": true
+        }
+        ```
+    -   **Error (401)**: Unauthorized. The user is not authenticated.
+    -   **Error (404)**: Not Found. The user was not found.
+    -   **Error (500)**: Internal Server Error.
+
+#### Suggest Messages
+
+-   **Method**: `POST`
+-   **Endpoint**: `/api/suggest-messages`
+-   **Purpose**: To generate anonymous message suggestions using AI.
+-   **Authentication**: Not required.
+-   **Request Body**:
     ```json
     {
-      "success": false,
-      "message": "Error message"
+      "description": "A topic for the message suggestions"
     }
     ```
-
-**Status Codes:**
-
-*   `200 OK`
-*   `401 Unauthorized`
-*   `404 Not Found`
-*   `500 Internal Server Error`
-
----
-
-## API Route: `/api/send-message`
-
-**HTTP Methods:** `POST`
-
-**Purpose:**
-
-*   `POST`: Sends a message to a user.
-
-**Request Details:**
-
-*   **Authentication:** Not strictly required, but uses session user ID or IP for rate limiting.
-*   **Request Body:**
-    ```json
-    {
-      "username": "recipient_username",
-      "content": "message_content"
-    }
-    ```
-
-**Response Details:**
-
-*   **Content-Type:** `application/json`
-*   **Success Response:**
-    ```json
-    {
-      "success": true,
-      "message": "Message Sent Successfully"
-    }
-    ```
-*   **Error Response:**
-    ```json
-    {
-      "success": false,
-      "message": "Error message"
-    }
-    ```
-
-**Status Codes:**
-
-*   `200 OK`
-*   `400 Bad Request`
-*   `403 Forbidden`
-*   `429 Too Many Requests`
-*   `500 Internal Server Error`
-
----
-
-## API Route: `/api/sign-up`
-
-**HTTP Methods:** `POST`
-
-**Purpose:**
-
-*   `POST`: Registers a new user and sends a verification email.
-
-**Request Details:**
-
-*   **Authentication:** None
-*   **Request Body:**
-    ```json
-    {
-      "username": "new_username",
-      "email": "user@example.com",
-      "password": "strong_password"
-    }
-    ```
-
-**Response Details:**
-
-*   **Content-Type:** `application/json`
-*   **Success Response:**
-    ```json
-    {
-      "success": true,
-      "message": "User Registered Successfully and Verification Email sent"
-    }
-    ```
-*   **Error Response:**
-    ```json
-    {
-      "success": false,
-      "message": "Error message"
-    }
-    ```
-
-**Status Codes:**
-
-*   `201 Created`
-*   `400 Bad Request`
-*   `500 Internal Server Error`
-
----
-
-## API Route: `/api/suggest-messages`
-
-**HTTP Methods:** `POST`
-
-**Purpose:**
-
-*   `POST`: Generates three anonymous message suggestions based on an optional description.
-
-**Request Details:**
-
-*   **Authentication:** Not strictly required, but uses session user ID or IP for rate limiting.
-*   **Request Body:**
-    ```json
-    {
-      "description": "Optional user description"
-    }
-    ```
-
-**Response Details:**
-
-*   **Content-Type:** `application/json`
-*   **Success Response:**
-    ```json
-    {
-      "success": true,
-      "message": "Fetched the fresh Messages Sussessfully",
-      "suggestions": {
-        "message1": "Suggestion 1",
-        "message2": "Suggestion 2",
-        "message3": "Suggestion 3"
-      }
-    }
-    ```
-*   **Error Response:**
-    ```json
-    {
-      "success": false,
-      "message": "Error message"
-    }
-    ```
-
-**Status Codes:**
-
-*   `200 OK`
-*   `400 Bad Request`
-*   `429 Too Many Requests`
-*   `500 Internal Server Error`
-
----
-
-## API Route: `/api/verify-code`
-
-**HTTP Methods:** `POST`
-
-**Purpose:**
-
-*   `POST`: Verifies a user's account using a verification code.
-
-**Request Details:**
-
-*   **Authentication:** None
-*   **Request Body:**
-    ```json
-    {
-      "username": "user_to_verify",
-      "verifyCode": "123456",
-      "email": "user@example.com"
-    }
-    ```
-
-**Response Details:**
-
-*   **Content-Type:** `application/json`
-*   **Success Response:**
-    ```json
-    {
-      "success": true,
-      "message": "User Verified Successfully"
-    }
-    ```
-*   **Error Response:**
-    ```json
-    {
-      "success": false,
-      "message": "Error message"
-    }
-    ```
-
-**Status Codes:**
-
-*   `200 OK`
-*   `400 Bad Request`
-*   `401 Unauthorized`
-*   `404 Not Found`
-*   `429 Too Many Requests`
-*   `500 Internal Server Error`
-
----
-
-## API Route: `/api/change-password`
-
-**HTTP Methods:** `POST`
-
-**Purpose:**
-
-*   `POST`: Changes the password for the authenticated user.
-
-**Request Details:**
-
-*   **Authentication:** Required (uses `next-auth` session).
-*   **Request Body:**
-    ```json
-    {
-      "oldPassword": "current_password",
-      "newPassword": "new_strong_password"
-    }
-    ```
-
-**Response Details:**
-
-*   **Content-Type:** `application/json`
-*   **Success Response:**
-    ```json
-    {
-      "success": true,
-      "message": "Password changed successfully"
-    }
-    ```
-*   **Error Response:**
-    ```json
-    {
-      "success": false,
-      "message": "Error message"
-    }
-    ```
-
-**Status Codes:**
-
-*   `200 OK`
-*   `400 Bad Request`
-*   `401 Unauthorized`
-*   `500 Internal Server Error`
-
----
-
-## API Route: `/api/forgot-password`
-
-**HTTP Methods:** `POST`
-
-**Purpose:**
-
-*   `POST`: Sends a password reset email to the user.
-
-**Request Details:**
-
-*   **Authentication:** None
-*   **Request Body:**
-    ```json
-    {
-      "email": "user@example.com"
-    }
-    ```
-
-**Response Details:**
-
-*   **Content-Type:** `application/json`
-*   **Success Response:**
-    ```json
-    {
-      "success": true,
-      "message": "Password reset email sent successfully"
-    }
-    ```
-*   **Error Response:**
-    ```json
-    {
-      "success": false,
-      "message": "Error message"
-    }
-    ```
-
-**Status Codes:**
-
-*   `200 OK`
-*   `400 Bad Request`
-*   `404 Not Found`
-*   `500 Internal Server Error`
-
----
-
-## API Route: `/api/me`
-
-**HTTP Methods:** `GET`
-
-**Purpose:**
-
-*   `GET`: Retrieves the profile of the authenticated user.
-
-**Request Details:**
-
-*   **Authentication:** Required (uses `next-auth` session).
-
-**Response Details:**
-
-*   **Content-Type:** `application/json`
-*   **Success Response:**
-    ```json
-    {
-      "success": true,
-      "message": "User profile retrieved successfully",
-      "user": {
-        "_id": "user_id",
-        "username": "user_username",
-        "email": "user@example.com",
-        "isVerified": true,
-        "isAcceptingMessages": true
-      }
-    }
-    ```
-*   **Error Response:**
-    ```json
-    {
-      "success": false,
-      "message": "Error message"
-    }
-    ```
-
-**Status Codes:**
-
-*   `200 OK`
-*   `401 Unauthorized`
-*   `404 Not Found`
-*   `500 Internal Server Error`
-
----
-
-## API Route: `/api/og`
-
-**HTTP Methods:** `GET`
-
-**Purpose:**
-
-*   `GET`: Generates an Open Graph (OG) image for a user's profile.
-
-**Request Details:**
-
-*   **Authentication:** None
-*   **Query Parameters:**
-    *   `username`: The username for which to generate the OG image.
-
-**Response Details:**
-
-*   **Content-Type:** `image/png`
-*   **Success Response:** An image representing the user's profile.
-*   **Error Response:** An error message or a default image.
-
-**Status Codes:**
-
-*   `200 OK`
-*   `400 Bad Request`
-*   `404 Not Found`
-*   `500 Internal Server Error`
-
----
-
-## API Route: `/api/reset-password`
-
-**HTTP Methods:** `POST`
-
-**Purpose:**
-
-*   `POST`: Resets the user's password using a verification code.
-
-**Request Details:**
-
-*   **Authentication:** None
-*   **Request Body:**
-    ```json
-    {
-      "email": "user@example.com",
-      "newPassword": "new_strong_password",
-      "verifyCode": "123456"
-    }
-    ```
-
-**Response Details:**
-
-*   **Content-Type:** `application/json`
-*   **Success Response:**
-    ```json
-    {
-      "success": true,
-      "message": "Password reset successfully"
-    }
-    ```
-*   **Error Response:**
-    ```json
-    {
-      "success": false,
-      "message": "Error message"
-    }
-    ```
-
-**Status Codes:**
-
-*   `200 OK`
-*   `400 Bad Request`
-*   `404 Not Found`
-*   `500 Internal Server Error`
+    -   `description` (optional): A string to provide context for the AI to generate more relevant suggestions.
+-   **Response**:
+    -   **Success (200)**:
+        ```json
+        {
+          "success": true,
+          "message": "Fetched the fresh Messages Sussessfully",
+          "suggestions": {
+            "suggestion_1": "Suggestion 1",
+            "suggestion_2": "Suggestion 2",
+            "suggestion_3": "Suggestion 3"
+          }
+        }
+        ```
+    -   **Error (429)**: Too Many Requests.
+    -   **Error (500)**: Internal Server Error (AI service).
+-   **Security Notes**:
+    -   This endpoint is rate-limited.
+
+### Image Generation
+
+#### OG Image for User Profile
+
+-   **Method**: `GET`
+-   **Endpoint**: `/api/og/user`
+-   **Purpose**: To generate an Open Graph (OG) image for a user's profile page, suitable for social media sharing.
+-   **Authentication**: Not required.
+-   **Query Parameters**:
+    -   `username`: The username of the user for whom to generate the image.
+-   **Response**:
+    -   **Success (200)**: An image (`image/png`) of size 1200x630.
+    -   **Error (500)**: A text response indicating failure to generate the image.
+-   **Notes**:
+    -   This endpoint returns an image, not JSON. It is intended to be used in the `og:image` meta tag of a user's profile page.
+    -   If the username is not provided or invalid, a default image with the username "someone" will be generated.

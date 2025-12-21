@@ -10,7 +10,7 @@ import { NextResponse } from "next/server";
 import { ApiResponse } from "@/types/ApiResponse";
 
 const changePasswordSchema = z.object({
-  password: passwordValidation,
+  oldPassword: passwordValidation,
   newPassword: passwordValidation,
   username: usernameValidation,
 });
@@ -21,7 +21,7 @@ export async function POST(
 ) {
   const body = await request.json();
   const { username } = await params;
-
+  console.log("object", body, username);
   const result = changePasswordSchema.safeParse({ ...body, username });
   if (!result.success) {
     const { fieldErrors } = result.error.flatten();
@@ -38,7 +38,7 @@ export async function POST(
       { status: 400 }
     );
   }
-  const oldPassword = result.data.password;
+  const oldPassword = result.data.oldPassword;
   const newPassword = result.data.newPassword;
   const validatedUsername = result.data.username;
   try {

@@ -4,7 +4,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm, SubmitHandler } from "react-hook-form";
 import * as z from "zod";
 import axios, { AxiosError } from "axios";
-import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { ApiResponse } from "@/types/ApiResponse";
 import { errorToast, successToast } from "@/components/ui/sonner";
 
@@ -19,63 +18,46 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/spinner";
-import { useState, useEffect } from "react";
-import { resetPasswordUISchema } from "@/schemas/resetPasswordSchemas";
+import { useState } from "react";
+import Link from "next/link";
+import { usernameValidation } from "@/schemas/signUpSchema";
 import ChangeThemeDropdown from "@/components/ChangeThemeDropdown";
 
-const ResetPasswordPage = () => {
-  const router = useRouter();
-  const searchParams = useSearchParams();
-  const { username }: { username: string } = useParams();
-
-  const token = searchParams.get("token");
-
+const ForgotPasswordPage = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const form = useForm<z.infer<typeof resetPasswordUISchema>>({
-    resolver: zodResolver(resetPasswordUISchema),
+  const form = useForm<z.infer<typeof IdentifierValidationSchema>>({
+    resolver: zodResolver(IdentifierValidationSchema),
     defaultValues: {
-      token: "",
-      newPassword: "",
-      confirmPassword: "",
+      identifier: "",
     },
   });
 
-  const { setValue } = form;
-
-  // Inject token from URL
-  useEffect(() => {
-    if (token) {
-      setValue("token", token);
-    }
-  }, [token, setValue]);
-
-  const onSubmit: SubmitHandler<z.infer<typeof resetPasswordUISchema>> = async (
-    data
-  ) => {
+  const onSubmit: SubmitHandler<
+    z.infer<typeof IdentifierValidationSchema>
+  > = async (data) => {
     setIsSubmitting(true);
-    console.log("data is -> ", data);
+
     try {
       const response = await axios.post<ApiResponse>(
-        `/api/reset-password/${username}?token=${encodeURIComponent(data.token)}`,
-        {
-          newPassword: data.newPassword,
-        }
+        "/api/forgot-password/send-verification-link",
+        { rawIdentifier: data.identifier }
       );
-      if (process.env.NODE_ENV === "development") console.log(response);
+
       if (response.data?.success) {
         successToast({
-          message: "Password Reset Successful",
-          description: "You can now sign in with your new password.",
+          message: "Reset Link Sent",
+          description:
+            "Check your email for the password reset link. Expires in 1 hour",
         });
 
-        router.replace("/sign-in");
+        form.reset();
       } else {
         errorToast({
-          message: "Reset Failed",
+          message: "Request Failed",
           description:
             response.data?.message ||
-            "Unable to reset password. Please try again.",
+            "Unable to send reset link. Please try again.",
         });
       }
     } catch (error) {
@@ -98,13 +80,13 @@ const ResetPasswordPage = () => {
         {/* Heading */}
         <div className="text-center mb-8">
           <div className="text-2xl relative w-full font-bold tracking-tight text-zinc-900 dark:text-zinc-100">
-            <h1>Reset Password</h1>
+            <h1>Forgot Password</h1>
             <div className="absolute -top-1 -right-1">
               <ChangeThemeDropdown />
             </div>
           </div>
           <p className="text-sm text-zinc-600 dark:text-zinc-400 mt-1">
-            Set a new password for your account
+            Enter your email to receive a password reset link
           </p>
         </div>
 
@@ -113,34 +95,12 @@ const ResetPasswordPage = () => {
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
             <FormField
               control={form.control}
-              name="newPassword"
+              name="identifier"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>New Password</FormLabel>
+                  <FormLabel>Email/Username</FormLabel>
                   <FormControl>
-                    <Input
-                      type="password"
-                      autoComplete="new-password"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="confirmPassword"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Confirm New Password</FormLabel>
-                  <FormControl>
-                    <Input
-                      type="password"
-                      autoComplete="new-password"
-                      {...field}
-                    />
+                    <Input placeholder="email/username" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -149,29 +109,39 @@ const ResetPasswordPage = () => {
 
             <Button
               type="submit"
-              disabled={isSubmitting || !token}
+              disabled={isSubmitting}
               className="w-full py-5 flex items-center justify-center gap-2"
             >
               {isSubmitting ? (
                 <>
                   <Spinner className="w-4 h-4" />
-                  Resetting...
+                  Sending...
                 </>
               ) : (
-                "Reset Password"
+                "Send Reset Link"
               )}
             </Button>
-
-            {!token && (
-              <p className="text-sm text-red-500 text-center">
-                Invalid or missing reset token
-              </p>
-            )}
           </form>
         </Form>
+
+        {/* Footer */}
+        <div className="mt-6 text-center">
+          <Link
+            href="/sign-in"
+            className="text-sm text-zinc-600 dark:text-zinc-400 hover:underline"
+          >
+            Back to Sign In
+          </Link>
+        </div>
       </div>
     </div>
   );
 };
 
-export default ResetPasswordPage;
+export default ForgotPasswordPage;
+const IdentifierValidationSchema = z.object({
+  identifier: z.union(
+    [z.email({ message: "Invalid email address" }), usernameValidation],
+    { message: "Identifier must be a valid email or username" }
+  ),
+});

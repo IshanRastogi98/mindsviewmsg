@@ -8,13 +8,13 @@ import { User } from "next-auth";
 import { useTheme } from "next-themes";
 
 import { Button } from "@/components/ui/button";
+
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+  Sheet,
+  SheetContent,
+  SheetTrigger,
+  SheetTitle,
+} from "@/components/ui/sheet";
 
 import {
   Menu,
@@ -28,13 +28,13 @@ import {
   Sun,
   Users,
 } from "lucide-react";
+import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 
 const Navbar = () => {
   const { data: session } = useSession();
   const user = session?.user as User;
 
   const pathname = usePathname();
-  const { setTheme } = useTheme();
 
   const links = [
     { name: "Home", href: "/", icon: Home },
@@ -46,16 +46,35 @@ const Navbar = () => {
     if (user) {
       return (
         <>
-          <Link href="/dashboard">
-            <Button
-              variant="outline"
-              className="border-zinc-300 dark:border-zinc-700 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-zinc-800"
-            >
-              <Layers className="w-4 h-4 mr-1" />
-              Dashboard
-            </Button>
-          </Link>
+          {/* Dashboard */}
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Link href="/dashboard">
+                  <Button variant="outline" size="icon">
+                    <Layers className="w-4 h-4" />
+                  </Button>
+                </Link>
+              </TooltipTrigger>
+              <TooltipContent>Dashboard</TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
 
+          {/* Profile */}
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Link href={`/profile/${user.username}`}>
+                  <Button variant="outline" size="icon">
+                    <UserLucide className="w-4 h-4" />
+                  </Button>
+                </Link>
+              </TooltipTrigger>
+              <TooltipContent>Profile</TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+
+          {/* Logout */}
           <Button
             variant="destructive"
             onClick={() => signOut()}
@@ -87,6 +106,8 @@ const Navbar = () => {
         </>
       );
     }
+
+    // unchanged signed-out UI
   };
 
   return (
@@ -123,54 +144,14 @@ const Navbar = () => {
         <div className="hidden md:flex gap-3">
           {/* Theme Toggle */}
           <>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="outline" size="icon">
-                  <Sun className="h-5 w-5 dark:hidden" />
-                  <Moon className="h-5 w-5 hidden dark:inline" />
-                  <span className="sr-only">Toggle theme</span>
-                </Button>
-              </DropdownMenuTrigger>
-
-              <DropdownMenuContent align="end">
-                <DropdownMenuItem onClick={() => setTheme("light")}>
-                  Light
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setTheme("dark")}>
-                  Dark
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setTheme("system")}>
-                  System
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+            <ChangeThemeDropdown />
 
             {authBasedButtonGroup()}
           </>
         </div>
         {/* Theme Toggle */}
         <div className="md:hidden absolute right-16">
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="outline" size="icon">
-                <Sun className="h-5 w-5 dark:hidden" />
-                <Moon className="h-5 w-5 hidden dark:inline" />
-                <span className="sr-only">Toggle theme</span>
-              </Button>
-            </DropdownMenuTrigger>
-
-            <DropdownMenuContent align="end">
-              <DropdownMenuItem onClick={() => setTheme("light")}>
-                Light
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => setTheme("dark")}>
-                Dark
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => setTheme("system")}>
-                System
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+          <ChangeThemeDropdown />
         </div>
         {/* Mobile Menu */}
         <Sheet>
@@ -188,6 +169,10 @@ const Navbar = () => {
               px-4 py-6
             "
           >
+            <VisuallyHidden>
+              <SheetTitle>Mobile Navigation Menu</SheetTitle>
+            </VisuallyHidden>
+
             {/* User Info Card */}
             <div
               className="
@@ -196,7 +181,7 @@ const Navbar = () => {
                 dark:bg-zinc-900 dark:border-zinc-800 dark:text-zinc-200
               "
             >
-              {!session ? (
+              {!session || !session.user ? (
                 <div className="flex flex-col items-start">
                   <p className="font-semibold text-lg text-zinc-900 dark:text-zinc-100">
                     Welcome!
@@ -254,7 +239,7 @@ const Navbar = () => {
 
               {/* Auth */}
               <div className="mt-6 flex flex-col gap-3">
-                {!session ? (
+                {!session || !session.user ? (
                   <>
                     <Link href="/sign-in">
                       <Button
@@ -295,6 +280,18 @@ const Navbar = () => {
                         Dashboard
                       </Button>
                     </Link>
+                    <Link href={`/profiile/${user.username}`}>
+                      <Button
+                        className="
+                          w-full 
+                          bg-zinc-100 text-zinc-900 hover:bg-zinc-200
+                          dark:bg-zinc-800 dark:text-zinc-100 dark:hover:bg-zinc-700
+                        "
+                      >
+                        <UserLucide className="w-4 h-4" />
+                        Profile
+                      </Button>
+                    </Link>
 
                     <Button
                       variant="destructive"
@@ -318,6 +315,13 @@ const Navbar = () => {
 export default Navbar;
 
 import Image from "next/image";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "./ui/tooltip";
+import ChangeThemeDropdown from "./ChangeThemeDropdown";
 
 export const Branding = ({ classname }: { classname?: string }) => {
   return (

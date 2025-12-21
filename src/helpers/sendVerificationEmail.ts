@@ -108,9 +108,9 @@ export async function sendVerificationEmailBrevo(
   }
 }
 export async function resetPasswordEmailBrevo(
-  resetUrl: string,
+  email: string,
   username: string,
-  email: string
+  resetUrl: string
 ): Promise<ApiResponse> {
   try {
     // 1️⃣ Convert React email → HTML

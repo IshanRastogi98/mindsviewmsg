@@ -30,52 +30,55 @@ export interface User extends Document {
   messages: Message[];
 }
 
-const UserSchema: Schema<User> = new Schema({
-  username: {
-    type: String,
-    required: [true, "Username is required"],
-    unique: true,
-    trim: true,
+const UserSchema: Schema<User> = new Schema(
+  {
+    username: {
+      type: String,
+      required: [true, "Username is required"],
+      unique: true,
+      trim: true,
+    },
+    email: {
+      type: String,
+      required: [true, "Email is required"],
+      unique: true,
+      trim: true,
+      match: [
+        /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
+        "Please use a valid email",
+      ],
+    },
+    password: {
+      type: String,
+      required: [true, "Password is required"],
+      select: false,
+    },
+    verifyCode: {
+      type: String,
+      required: [true, "Code is required"],
+    },
+    verifyCodeExpiry: {
+      type: Date,
+      required: [true, "Code Expiry is required"],
+    },
+    isVerified: {
+      type: Boolean,
+      default: false,
+    },
+    isAcceptingMessages: {
+      type: Boolean,
+      default: true,
+    },
+    resetToken: {
+      type: String,
+    },
+    resetTokenExpiry: {
+      type: Date,
+    },
+    messages: [MessageSchema],
   },
-  email: {
-    type: String,
-    required: [true, "Email is required"],
-    unique: true,
-    trim: true,
-    match: [
-      /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
-      "Please use a valid email",
-    ],
-  },
-  password: {
-    type: String,
-    required: [true, "Password is required"],
-    select: false,
-  },
-  verifyCode: {
-    type: String,
-    required: [true, "Code is required"],
-  },
-  verifyCodeExpiry: {
-    type: Date,
-    required: [true, "Code Expiry is required"],
-  },
-  isVerified: {
-    type: Boolean,
-    default: false,
-  },
-  isAcceptingMessages: {
-    type: Boolean,
-    default: true,
-  },
-  resetToken: {
-    type: String,
-  },
-  resetTokenExpiry: {
-    type: Date,
-  },
-  messages: [MessageSchema],
-});
+  { timestamps: true }
+);
 
 const UserModel =
   (mongoose.models.User as mongoose.Model<User>) ||

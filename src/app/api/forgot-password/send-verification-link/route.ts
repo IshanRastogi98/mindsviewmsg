@@ -13,22 +13,11 @@ import {
   resetPasswordEmail,
   resetPasswordEmailBrevo,
 } from "@/helpers/sendVerificationEmail";
-
-const IdentifierValidationSchema = z.object({
-  identifier: z.union(
-    [
-      z.string().email({ message: "Invalid email address" }),
-      usernameValidation,
-    ],
-    { message: "Identifier must be a valid email or username" }
-  ),
-});
+import { identifierValidationSchema } from "@/schemas/resetPasswordSchemas";
 
 export async function POST(request: Request) {
-  const { searchParams } = new URL(request.url);
-  const rawIdentifier = searchParams.get("identifier");
-
-  const result = IdentifierValidationSchema.safeParse({
+  const { rawIdentifier } = await request.json();
+  const result = identifierValidationSchema.safeParse({
     identifier: rawIdentifier,
   });
   if (!result.success) {
@@ -48,9 +37,11 @@ export async function POST(request: Request) {
   }
   const identifier = result.data.identifier;
 
+  let user = null;
+
   try {
     await connectDB();
-    const user = await UserModel.findOne({
+    user = await UserModel.findOne({
       $or: [{ email: identifier }, { username: identifier }],
     });
 
@@ -76,7 +67,7 @@ export async function POST(request: Request) {
     const resetToken = crypto.randomBytes(32).toString("hex");
     const resetTokenExpiry = new Date();
     resetTokenExpiry.setHours(resetTokenExpiry.getHours() + 1);
-    const baseUrl = process.env.NEXT_PUBLIC_APP_URL;
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
     // if (!baseUrl) {
     //   return Response.json(
     //     {
@@ -108,10 +99,18 @@ export async function POST(request: Request) {
     ); // Brevo Version
 
     if (!emailResendResponse.success) {
+      user.resetToken = undefined;
+      user.resetTokenExpiry = undefined;
+      user.save();
+      console.error(
+        "\n\nError sending Reset Password Request",
+        emailResendResponse
+      );
+
       return Response.json(
         {
           success: false,
-          message: emailResendResponse.message,
+          message: "error sending email " + emailResendResponse.message,
         },
         { status: 500 }
       );
@@ -125,6 +124,11 @@ export async function POST(request: Request) {
       { status: 200 }
     );
   } catch (error) {
+    if (user) {
+      user.resetToken = undefined;
+      user.resetTokenExpiry = undefined;
+      user.save();
+    }
     console.error("Error sending Reset Password Request", error);
     return Response.json(
       {

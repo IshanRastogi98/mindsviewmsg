@@ -6,7 +6,7 @@ export const runtime = "edge";
 export const revalidate = 60 * 60 * 24; // 24 hours
 
 /**
- * OG Image Generator for /u/:username
+ * OG Image Generator for /profile/:username
  * Returns ONLY an image (never JSON)
  */
 
@@ -15,6 +15,7 @@ export async function GET(req: NextRequest) {
     const { searchParams } = new URL(req.url);
     const rawUsername = searchParams.get("username") || "";
     const parsedUsername = decodeURIComponent(rawUsername);
+
     // ---- VALIDATION (server-only, silent) ----
     const result = usernameValidation.safeParse(parsedUsername);
     const username = !result.success ? "someone" : (result.data ?? rawUsername);
@@ -51,7 +52,7 @@ export async function GET(req: NextRequest) {
           style={{
             display: "flex", // ✅ REQUIRED
             alignItems: "center",
-            gap: 12,
+            gap: 14,
             position: "relative",
           }}
           tw="w-full h-full flex-col-reverse"
@@ -60,13 +61,26 @@ export async function GET(req: NextRequest) {
           <div
             style={{
               display: "flex", // ✅ REQUIRED
-              fontSize: 36,
+              fontSize: 42,
               fontWeight: "bolder",
-              opacity: 0.85,
+              opacity: 0.9,
             }}
-            tw="mx-auto mb-28"
+            tw="mx-auto mb-24"
           >
             @{username}
+          </div>
+
+          {/* CONTEXT LABEL */}
+          <div
+            style={{
+              display: "flex",
+              fontSize: 22,
+              opacity: 0.75,
+              letterSpacing: "0.02em",
+            }}
+            tw="mx-auto"
+          >
+            Public Profile · MindsViewMsg
           </div>
         </div>
       </div>,
@@ -76,8 +90,9 @@ export async function GET(req: NextRequest) {
       }
     );
   } catch (e: any) {
-    console.log(`${e.message}`);
-    return new Response(`Failed to generate the image`, {
+    console.log(e?.message ?? "OG Profile generation failed");
+
+    return new Response("Failed to generate the image", {
       status: 500,
     });
   }

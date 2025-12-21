@@ -27,6 +27,7 @@ import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/spinner";
 import { signInSchema } from "@/schemas/signInSchema";
 import { signIn } from "next-auth/react";
+import ChangeThemeDropdown from "@/components/ChangeThemeDropdown";
 
 const page = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -86,9 +87,12 @@ const page = () => {
       <div className="w-full max-w-md bg-white/80 dark:bg-zinc-900/80 border border-zinc-200 dark:border-zinc-800 backdrop-blur-xl rounded-2xl shadow-2xl p-8">
         {/* Heading */}
         <div className="text-center mb-8">
-          <h1 className="text-2xl font-bold tracking-tight text-zinc-900 dark:text-zinc-100">
-            Welcome Back
-          </h1>
+          <div className="text-2xl relative w-full font-bold tracking-tight text-zinc-900 dark:text-zinc-100">
+            <h1>Welcome Back</h1>
+            <div className="absolute -top-1 -right-1">
+              <ChangeThemeDropdown />
+            </div>
+          </div>
           <p className="text-sm tracking-wide text-zinc-600 dark:text-zinc-400 mt-1">
             Enter your credentials to continue
           </p>
@@ -133,6 +137,15 @@ const page = () => {
                   </FormItem>
                 )}
               />
+              {/* forgot password */}
+              <p className="text-right -mt-4 text-sm text-zinc-600 dark:text-zinc-500">
+                <Link
+                  href="/forgot-password"
+                  className="text-zinc-900 dark:text-zinc-300 hover:underline"
+                >
+                  Forgot Password?
+                </Link>
+              </p>
 
               <Button
                 type="submit"
@@ -212,12 +225,12 @@ const page = () => {
         {/* Footer Links */}
         <p className="mt-8 text-center text-sm text-zinc-600 dark:text-zinc-500">
           Don't have an account?{" "}
-          <a
+          <Link
             href="/sign-up"
             className="text-zinc-900 dark:text-zinc-300 hover:underline"
           >
             Sign Up
-          </a>
+          </Link>
         </p>
       </div>
     </div>
