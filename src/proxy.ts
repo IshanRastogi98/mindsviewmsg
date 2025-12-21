@@ -16,7 +16,11 @@ export async function proxy(request: NextRequest) {
   ) {
     return NextResponse.redirect(new URL("/dashboard", request.url));
   }
-  if (!token && url.pathname.startsWith("/dashboard"))
+  if (
+    !token &&
+    (url.pathname.startsWith("/dashboard") ||
+      url.pathname.startsWith("/profile/change-password"))
+  )
     return NextResponse.redirect(new URL("/sign-in", request.url));
 
   return NextResponse.next();
@@ -27,5 +31,11 @@ export async function proxy(request: NextRequest) {
 
 // See "Matching Paths" below to learn more
 export const config = {
-  matcher: ["/sign-in", "/sign-up", "/dashboard/:path*", "/verify/:path*"],
+  matcher: [
+    "/sign-in",
+    "/sign-up",
+    "/dashboard/:path*",
+    "/verify/:path*",
+    "/profile/change-password/:path*",
+  ],
 };
