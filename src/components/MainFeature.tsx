@@ -146,7 +146,6 @@ const MainFeature = ({
         "/api/suggest-messages",
         data
       );
-      console.log(response);
       if (response.data?.success) {
         successToast({
           message: "Success🎉",
