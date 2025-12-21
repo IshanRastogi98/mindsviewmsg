@@ -3,7 +3,6 @@ import { ImageResponse } from "next/og";
 import { NextRequest } from "next/server";
 
 export const runtime = "edge";
-export const revalidate = 60 * 60 * 24; // 24 hours
 
 /**
  * OG Image Generator for /u/:username
@@ -73,6 +72,10 @@ export async function GET(req: NextRequest) {
       {
         width: 1200,
         height: 630,
+        headers: {
+          // ✅ Correct caching for OG images
+          "Cache-Control": "public, max-age=86400, immutable",
+        },
       }
     );
   } catch (e: any) {
