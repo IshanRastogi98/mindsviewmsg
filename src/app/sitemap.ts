@@ -2,7 +2,6 @@ import { MetadataRoute } from "next";
 import dbConnect from "@/lib/dbConnect";
 import UserModel from "@/model/user";
 
-export const revalidate = 60 * 60 * 6; // 6 hours
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
