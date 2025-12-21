@@ -78,5 +78,42 @@ export function errorToast({
     closeButton: true,
   });
 }
+interface InfoToastOptions {
+  message?: string;
+  description?: string;
+}
+
+export function infoToast({
+  message = "Info",
+  description = "Here's some information.",
+}: InfoToastOptions) {
+  toast.info(message, {
+    description,
+    icon: <InfoIcon className="w-5 h-5 text-blue-400" />,
+    className:
+      "bg-zinc-900/90 border border-zinc-700 text-zinc-200 shadow-xl backdrop-blur-md",
+    duration: 5000,
+    closeButton: true,
+  });
+}
+
+interface WarningToastOptions {
+  message?: string;
+  description?: string;
+}
+
+export function warningToast({
+  message = "Warning",
+  description = "Please be aware of this.",
+}: WarningToastOptions) {
+  toast.warning(message, {
+    description,
+    icon: <TriangleAlertIcon className="w-5 h-5 text-yellow-400" />,
+    className:
+      "bg-zinc-900/90 border border-zinc-700 text-zinc-200 shadow-xl backdrop-blur-md",
+    duration: 6000,
+    closeButton: true,
+  });
+}
 
 export { Toaster };

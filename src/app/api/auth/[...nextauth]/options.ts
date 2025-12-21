@@ -50,6 +50,9 @@ export const authOptions: NextAuthOptions = {
           if (!user) throw new Error("Username/Email or Password is wrong !!");
           if (!user.isVerified)
             throw new Error("Please Verify your Account first");
+          if (!user.password) {
+            throw new Error("Please sign in using Google");
+          }
           const passwordMatch = await bcrypt.compare(
             credentials.password,
             user.password
@@ -71,13 +74,15 @@ export const authOptions: NextAuthOptions = {
       }
       // This callback is triggered when a user signs in, either with credentials or OAuth
       if (account?.provider === "google") {
-        // console.log("\n guser found", user);
+        // console.log("\n\n user", user);
         await connectDB();
         try {
           const existingUser = await UserModel.findOne({ email: user.email });
           // console.log("\nexistin guser foundexistingUser", existingUser, "\n");
+
           if (!existingUser) {
             // If the user doesn't exist, create a new user
+
             const username = user.email!.split("@")[0]; // Basic username from email
             const newUser = new UserModel({
               username: `${username}_${Date.now()}`, // Append timestamp for uniqueness
@@ -87,6 +92,7 @@ export const authOptions: NextAuthOptions = {
             });
             const savedUser = await newUser.save();
             user._id = savedUser._id.toString();
+            // console.log("\nsaved guser foundexistingUser", savedUser, "\n");
           } else {
             user._id = existingUser._id.toString();
           }

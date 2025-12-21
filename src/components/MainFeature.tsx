@@ -37,9 +37,7 @@ import {
 import { useRouter } from "next/navigation";
 import { descriptionSchema } from "@/schemas/descriptionSchema";
 import { Session } from "next-auth";
-import {
-  suggestionSchema,
-} from "@/schemas/messageSuggestionSchema";
+import { suggestionSchema } from "@/schemas/messageSuggestionSchema";
 
 type MainFeatureProps = {
   session?: Session | null;
@@ -182,7 +180,8 @@ const MainFeature = ({
   };
 
   const handleSuggestionClick = useCallback(
-    (index: number) => {
+    (index: number, e: any) => {
+      e.preventDefault();
       if (!suggestions[index]) return;
       form.setValue("content", suggestions[index].message);
     },
@@ -193,18 +192,41 @@ const MainFeature = ({
       suggestions.map((suggestion, i) => (
         <div
           key={i}
-          onClick={() => handleSuggestionClick(i)}
+          role="button"
+          tabIndex={0}
+          onClick={(e) => handleSuggestionClick(i, e)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" || e.key === " ") {
+              e.preventDefault();
+              handleSuggestionClick(i, e as any);
+            }
+          }}
           className="
-              rounded-xl
-              bg-white/60 dark:bg-zinc-800/60
-              border border-zinc-400/40 hover:border-zinc-800/40 dark:border-white/10
-              p-4
-              text-sm
-              text-zinc-800 dark:text-zinc-100
-              hover:bg-white/80 dark:hover:bg-zinc-700/70
-              transition-colors
-              cursor-pointer
-            "
+    w-full
+    rounded-xl
+    bg-white/60 dark:bg-zinc-800/60
+    border border-zinc-400/40 hover:border-zinc-800/40 dark:border-white/10
+    p-4
+    text-sm
+    text-left
+    text-zinc-800 dark:text-zinc-100
+
+    cursor-pointer
+    select-none
+
+    transition-all duration-150 ease-out
+    hover:bg-white/80 dark:hover:bg-zinc-700/70
+    hover:shadow-sm
+    hover:-translate-y-px
+
+    active:translate-y-0
+    active:scale-[0.98]
+
+    focus:outline-none
+    focus-visible:ring-2
+    focus-visible:ring-zinc-500/40
+    dark:focus-visible:ring-zinc-300/30
+  "
         >
           {suggestion.message}
         </div>
@@ -215,40 +237,6 @@ const MainFeature = ({
   const handleEditUsername = useCallback(() => {
     router.replace(`/u/?username=${username}`);
   }, [router, username]);
-
-  // if (session === undefined) {
-  //   return (
-  //     <section
-  //       className="
-  //         w-full
-  //         py-24
-  //         px-6
-  //         flex justify-center
-  //       "
-  //     >
-  //       <div
-  //         className="
-  //           w-full max-w-6xl
-  //           grid grid-cols-1
-
-  //         "
-  //       >
-  //         <div
-  //           className="
-  //   h-[32rem] w-full
-  //   rounded-2xl
-  //   flex items-center justify-center
-  //   bg-white/5
-  //   backdrop-blur-xl
-  //   border border-white/10
-  // "
-  //         >
-  //           <Skeleton className="h-80 w-3/4 max-w-md rounded-3xl" />
-  //         </div>
-  //       </div>
-  //     </section>
-  //   );
-  // }
 
   return (
     <section

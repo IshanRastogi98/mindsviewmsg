@@ -101,7 +101,7 @@ export async function POST(request: Request) {
           password: hashedPassword,
           verifyCode: otp,
           verifyCodeExpiry: expiryDate,
-          message: [],
+          messages: [],
         });
         await newUser.save();
       }

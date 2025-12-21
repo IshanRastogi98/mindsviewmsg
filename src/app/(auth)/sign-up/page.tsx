@@ -12,7 +12,7 @@ import axios, { AxiosError } from "axios";
 import { ApiResponse } from "@/types/ApiResponse";
 import { title } from "process";
 import { CheckCircle2, Loader2, XCircle } from "lucide-react";
-import { errorToast, successToast } from "@/components/ui/sonner";
+import { errorToast, infoToast, successToast } from "@/components/ui/sonner";
 import {
   Form,
   FormControl,
@@ -33,6 +33,7 @@ const page = () => {
   const [usernameMessage, setUsernameMessage] = useState("");
   const [isCheckingUsername, setIsCheckingUsername] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSubmittingToProvider, setIsSubmittingToProvider] = useState(false);
 
   const [debouncedUsername] = useDebounceValue(username, 300);
 
@@ -90,6 +91,12 @@ const page = () => {
   const onSubmit: SubmitHandler<z.infer<typeof signUpSchema>> = async (
     data: z.infer<typeof signUpSchema>
   ) => {
+    if (isSubmitting || isSubmittingToProvider)
+      return infoToast({
+        message: "Please wait",
+        description: "Your sign-up is already in progress.",
+      });
+
     setIsSubmitting(true);
     console.log("data is -> ", data);
     try {
@@ -229,7 +236,7 @@ const page = () => {
 
               <Button
                 type="submit"
-                disabled={isSubmitting}
+                disabled={isSubmitting || isSubmittingToProvider}
                 className="
                 py-5 text-md w-full flex items-center justify-center gap-2 font-medium
                 bg-zinc-900 text-white hover:bg-zinc-800
@@ -262,20 +269,41 @@ const page = () => {
 
           {/* Google Button */}
           <Button
-            onClick={() => signIn("google")}
+            disabled={isSubmittingToProvider || isSubmitting}
+            onClick={async () => {
+              if (isSubmitting || isSubmittingToProvider) return;
+
+              setIsSubmittingToProvider(true);
+
+              const res = await signIn("google", {
+                redirect: false,
+              });
+
+              if (res?.url) {
+                window.location.href = res.url;
+              }
+            }}
             variant="outline"
             className="
-      w-full h-11
-      flex items-center justify-center gap-3
-      rounded-xl
-      border-zinc-300 dark:border-zinc-700
-      bg-white dark:bg-zinc-900
-      text-zinc-800 dark:text-zinc-100
-      hover:bg-zinc-100 dark:hover:bg-zinc-800
-      transition-colors
-    "
+    w-full h-11
+    flex items-center justify-center gap-3
+    rounded-xl
+
+    border-zinc-300 dark:border-zinc-700
+    bg-white dark:bg-zinc-900
+    text-zinc-800 dark:text-zinc-100
+
+    transition-colors duration-150
+
+    hover:bg-zinc-100 dark:hover:bg-zinc-800
+    active:bg-zinc-200/60 dark:active:bg-zinc-700/60
+
+    disabled:opacity-50
+    disabled:cursor-not-allowed
+    disabled:hover:bg-white
+    dark:disabled:hover:bg-zinc-900
+  "
           >
-            {/* Optional Google Icon */}
             <svg
               width="18"
               height="18"
@@ -300,19 +328,28 @@ const page = () => {
               />
             </svg>
 
-            <span className="text-sm font-medium">Continue in with Google</span>
+            <span className="flex items-center gap-2 text-sm font-medium whitespace-nowrap">
+              {isSubmittingToProvider ? (
+                <>
+                  <Spinner className="w-4 h-4 animate-spin" />
+                  Please wait…
+                </>
+              ) : (
+                "Continue with Google"
+              )}
+            </span>
           </Button>
         </div>
 
         {/* Footer */}
         <p className="mt-8 text-center text-sm text-zinc-600 dark:text-zinc-500">
           Already have an account?{" "}
-          <a
+          <Link
             href="/sign-in"
             className="text-zinc-900 dark:text-zinc-300 hover:underline"
           >
             Sign In
-          </a>
+          </Link>
         </p>
       </div>
     </div>
