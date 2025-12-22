@@ -23,19 +23,10 @@ export async function generateMetadata({
     };
   }
 
-  const shouldIndex = await checkIfUsernameHasMessages(username);
   const title = `Send Anonymous Messages to ${username}`;
   const description = `Send anonymous messages to ${username} on MindsViewMsg. Messages are private and identity is not revealed.`;
   const url = `${process.env.NEXT_PUBLIC_BASE_URL}/u/${username}`;
   const ogImageUrl = `${process.env.NEXT_PUBLIC_BASE_URL}/api/og/user?username=${encodeURIComponent(username)}`;
-
-  if (!shouldIndex) {
-    return {
-      title,
-      description,
-      robots: { index: false, follow: true },
-    };
-  }
 
   return {
     title,
@@ -71,8 +62,6 @@ export default async function Page({ params }: PageProps) {
   const { username } = await params;
 
   const session: Session | null = await getServerSession(authOptions);
-
-  // console.log("username came to be:", username); // ✅ "i"
 
   return (
     <>

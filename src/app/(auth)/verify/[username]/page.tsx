@@ -82,7 +82,6 @@ const page = () => {
       }
     } catch (error) {
       const axiosError = error as AxiosError<ApiResponse>;
-      //   console.error("Error otp resend", axiosError.response?.data);
       errorToast({
         message: "OTP Resend Failed",
         description:
@@ -98,7 +97,6 @@ const page = () => {
     verifyCode: string;
   }) => {
     setIsSubmitting(true);
-    console.log("data is -> ", data, username);
     try {
       const response = await axios.post(`/api/verify-code`, {
         verifyCode: data.verifyCode,
@@ -112,7 +110,6 @@ const page = () => {
         });
         router.replace(`/sign-in`);
       } else {
-        // console.error(response.data?.message);
         errorToast({
           message: "Verification Failed !!",
           description:
@@ -121,7 +118,6 @@ const page = () => {
       }
     } catch (error) {
       const axiosError = error as AxiosError<ApiResponse>;
-      //   console.error("Error Verifying user", axiosError.response?.data);
       errorToast({
         message: "Verification Failed !!",
         description:

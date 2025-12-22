@@ -49,6 +49,5 @@ export const metadata: Metadata = {
 export default async function Page({ searchParams }: PageProps) {
   const session: Session | null = await getServerSession(authOptions);
   const { username } = await searchParams;
-  // console.log(username);
   return <MainFeature session={session} username={username} allowEdit={true} />;
 }

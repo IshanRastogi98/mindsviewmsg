@@ -48,7 +48,6 @@ const ChangePasswordPage = () => {
   const onSubmit: SubmitHandler<z.infer<typeof changePasswordSchema>> = async (
     data
   ) => {
-    console.log("data is ->", data);
     setIsSubmitting(true);
     try {
       const response = await axios.post<ApiResponse>(
@@ -58,7 +57,6 @@ const ChangePasswordPage = () => {
           newPassword: data.newPassword,
         }
       );
-      console.log("data is ->", response);
 
       if (response.data?.success) {
         successToast({
@@ -77,7 +75,6 @@ const ChangePasswordPage = () => {
       }
     } catch (error) {
       const axiosError = error as AxiosError<ApiResponse>;
-      console.log("error", axiosError);
       errorToast({
         message: "Error",
         description:

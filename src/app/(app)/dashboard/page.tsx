@@ -55,7 +55,6 @@ const page = () => {
 
   const fetchAcceptMessage = useCallback(async () => {
     setIsSwitching(true);
-    // console.log("switching");
     try {
       const response = await axios.get<ApiResponse>(`/api/accept-messages`);
       if (response.data?.success) {
@@ -69,7 +68,6 @@ const page = () => {
       }
     } catch (error) {
       const axiosError = error as AxiosError<ApiResponse>;
-      //   console.error("Error signing up", axiosError.response?.data);
       errorToast({
         message: "Error",
         description:
@@ -85,7 +83,6 @@ const page = () => {
     async (refresh: boolean = false) => {
       setIsLoading(true);
       setIsSwitching(false);
-      // console.log("fetching");
 
       try {
         const response = await axios.get(`/api/get-messages`);
@@ -108,7 +105,6 @@ const page = () => {
         }
       } catch (error) {
         const axiosError = error as AxiosError<ApiResponse>;
-        //   console.error("Error signing up", axiosError.response?.data);
         errorToast({
           message: "Error",
           description:
@@ -157,7 +153,6 @@ const page = () => {
         });
         setValue("acceptMessages", !acceptMessages);
       } else {
-        // console.error(response.data?.message);
         errorToast({
           message: "Error Switching",
           description:
@@ -166,7 +161,6 @@ const page = () => {
       }
     } catch (error) {
       const axiosError = error as AxiosError<ApiResponse>;
-      //   console.error("Error switching", axiosError.response?.data);
       errorToast({
         message: "Error Switching",
         description:

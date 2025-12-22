@@ -66,7 +66,6 @@ const page = () => {
       identifier: data.identifier,
       password: data.password,
     });
-    // console.log(result);
     if (result?.error) {
       if (!result.ok && result.error === "CredentialsSignin") {
         errorToast({

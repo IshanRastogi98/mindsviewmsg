@@ -42,7 +42,6 @@ const MessageCard = ({ message, onMessageDelete }: MessageCardProps) => {
       const response = await axios.delete<ApiResponse>(
         `/api/delete-message/${message._id}`
       );
-      // console.log('resp from del msg', response)
       if (response.data.success) {
         successToast({
           message: "Deleted Successfully",
@@ -57,7 +56,6 @@ const MessageCard = ({ message, onMessageDelete }: MessageCardProps) => {
       }
     } catch (error) {
       const axiosError = error as AxiosError<ApiResponse>;
-      //   console.error("Error signing up", axiosError.response?.data);
       errorToast({
         message: "Deletion Failed",
         description:

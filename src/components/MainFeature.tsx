@@ -92,7 +92,6 @@ const MainFeature = ({
     data: z.infer<typeof messageSchema>
   ) => {
     setIsSending(true);
-    console.log("data is -> ", data);
     try {
       const response = await axios.post("/api/send-message", data);
       if (response.data?.success) {
@@ -101,7 +100,6 @@ const MainFeature = ({
           description: `Message sent to ${data.username}, Successfully.`,
         });
       } else {
-        // console.error(response.data?.message);
         errorToast({
           message: "Failed",
           description:
@@ -110,7 +108,6 @@ const MainFeature = ({
       }
     } catch (error) {
       const axiosError = error as AxiosError<ApiResponse>;
-      //   console.error("Error signing up", axiosError.response?.data);
       errorToast({
         message: "Error",
         description:
@@ -140,7 +137,6 @@ const MainFeature = ({
     z.infer<typeof descriptionSchema>
   > = async (data: z.infer<typeof descriptionSchema>) => {
     setIsLoading(true);
-    console.log("data is -> ", data);
     try {
       const response = await axios.post<ApiResponse>(
         "/api/suggest-messages",
@@ -157,7 +153,6 @@ const MainFeature = ({
           >
         );
       } else {
-        // console.error(response.data?.message);
         errorToast({
           message: "Failed",
           description:
@@ -166,7 +161,6 @@ const MainFeature = ({
       }
     } catch (error) {
       const axiosError = error as AxiosError<ApiResponse>;
-      //   console.error("Error signing up", axiosError.response?.data);
       errorToast({
         message: "Error",
         description:

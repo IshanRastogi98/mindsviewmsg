@@ -54,7 +54,6 @@ const ResetPasswordPage = () => {
     data
   ) => {
     setIsSubmitting(true);
-    console.log("data is -> ", data);
     try {
       const response = await axios.post<ApiResponse>(
         `/api/reset-password/${username}?token=${encodeURIComponent(data.token)}`,
