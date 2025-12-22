@@ -18,6 +18,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
+  verification: {
+    google: "2-ZxkCTdRS2Gdv8sLaPG8v9ihSIT0YeWCb5MGTy_at4",
+  },
   title: {
     default:
       "MindsViewMsg - Privacy-First Anonymous Messaging. Say Anything. Stay Anonymous.",
