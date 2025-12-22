@@ -37,6 +37,12 @@ export async function generateMetadata({
           url: ogImageUrl,
           width: 1200,
           height: 630,
+          alt: `${process.env.NEXT_PUBLIC_BASE_URL}/og-default.png`,
+        },
+        {
+          url: ogImageUrl,
+          width: 1200,
+          height: 630,
           alt: `${username}'s profile on MindsViewMsg`,
         },
       ],
