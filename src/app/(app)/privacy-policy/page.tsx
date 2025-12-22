@@ -6,6 +6,9 @@ export const metadata: Metadata = {
   title: "Privacy Policy | MindsViewMsg",
   description:
     "Read how MindsViewMsg protects your privacy, handles data responsibly, and ensures anonymous and secure communication.",
+  alternates: {
+    canonical: `${process.env.NEXT_PUBLIC_BASE_URL}/privacy-policy`,
+  },
   openGraph: {
     title: "Privacy Policy | MindsViewMsg",
     description:

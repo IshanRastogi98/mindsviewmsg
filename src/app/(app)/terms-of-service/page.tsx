@@ -6,6 +6,9 @@ export const metadata: Metadata = {
   title: "Terms of Service | MindsViewMsg",
   description:
     "Review the terms and conditions for using MindsViewMsg, including user responsibilities and platform usage guidelines.",
+  alternates: {
+    canonical: `${process.env.NEXT_PUBLIC_BASE_URL}/terms-of-service`,
+  },
   openGraph: {
     title: "Terms of Service | MindsViewMsg",
     description:

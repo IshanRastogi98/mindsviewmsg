@@ -5,6 +5,9 @@ export const metadata: Metadata = {
   title: "FAQ | MindsViewMsg",
   description:
     "Find answers to common questions about MindsViewMsg, anonymous messaging, privacy, security, and how the platform works.",
+  alternates: {
+    canonical: `${process.env.NEXT_PUBLIC_BASE_URL}/faq`,
+  },
   openGraph: {
     title: "FAQ | MindsViewMsg",
     description:

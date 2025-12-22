@@ -22,7 +22,6 @@ import { Spinner } from "@/components/ui/spinner";
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import { changePasswordSchema } from "@/schemas/resetPasswordSchemas";
-import ChangeThemeDropdown from "@/components/ChangeThemeDropdown";
 
 const ChangePasswordPage = () => {
   const router = useRouter();
