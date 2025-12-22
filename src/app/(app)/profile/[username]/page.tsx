@@ -34,13 +34,13 @@ export async function generateMetadata({
       siteName: "MindsViewMsg",
       images: [
         {
-          url: `${process.env.NEXT_PUBLIC_BASE_URL}/og-default.png`,
+          url: ogImageUrl,
           width: 1200,
           height: 630,
           alt: `${username}'s profile on MindsViewMsg`,
         },
         {
-          url: ogImageUrl,
+          url: `${process.env.NEXT_PUBLIC_BASE_URL}/og-default.png`,
           width: 1200,
           height: 630,
           alt: `${username}'s profile on MindsViewMsg`,
