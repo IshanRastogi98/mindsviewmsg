@@ -192,18 +192,20 @@ const Navbar = () => {
                 </div>
               ) : (
                 <div className="flex flex-col gap-1">
-                  <p className="font-semibold text-lg text-zinc-900 dark:text-zinc-100">
+                  <p className="font-semibold text-lg wrap-break-word whitespace-normal text-zinc-900 dark:text-zinc-100">
                     Hello, {user?.username || "User"} 👋
                   </p>
 
-                  <p className="text-sm flex items-center gap-2 text-zinc-700 dark:text-zinc-400">
-                    <UserLucide className="w-4 h-4 text-zinc-600 dark:text-zinc-500" />
-                    {user?.email || "User"}
+                  <p className="text-sm flex items-start gap-2 break-all text-zinc-700 dark:text-zinc-400">
+                    <UserLucide className="w-4 h-4 mt-0.5 shrink-0 text-zinc-600 dark:text-zinc-500" />
+                    <span className="whitespace-normal break-all">
+                      {user?.email || "User"}
+                    </span>
                   </p>
 
-                  <p className="text-xs mt-2 border-t pt-2 border-zinc-300 dark:border-zinc-800 text-zinc-500 dark:text-zinc-500">
+                  <p className="text-xs mt-2 border-t pt-2 border-zinc-300 dark:border-zinc-800 text-zinc-500 dark:text-zinc-500 whitespace-normal">
                     Logged in as{" "}
-                    <span className="font-medium text-zinc-700 dark:text-zinc-300">
+                    <span className="font-medium text-zinc-700 dark:text-zinc-300 wrap-break-word">
                       {user?.username || "User"}
                     </span>
                   </p>
@@ -280,7 +282,7 @@ const Navbar = () => {
                         Dashboard
                       </Button>
                     </Link>
-                    <Link href={`/profiile/${user.username}`}>
+                    <Link href={`/profile/${user.username}`}>
                       <Button
                         className="
                           w-full 

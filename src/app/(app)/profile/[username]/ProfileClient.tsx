@@ -163,8 +163,11 @@ export default function ProfileClient({
           </Button>
 
           {/* Email (owner only, informational) */}
-          <p className="text-xs text-zinc-500 text-center">
-            Logged in as <span className="font-medium">{me.email}</span>
+          <p className="text-xs text-zinc-500 text-center whitespace-normal">
+            Logged in as{" "}
+            <span className="font-medium break-all max-w-full inline-block">
+              {me.email}
+            </span>
           </p>
         </div>
       </>
