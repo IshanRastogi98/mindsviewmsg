@@ -273,23 +273,31 @@ const MainFeature = ({
 
           {/* Username chip */}
           {username && username.length >= 2 && !allowEdit && (
-            <div className="mt-4 flex justify-center items-center gap-3">
-              <span className="text-sm sm:text-base font-medium text-zinc-700 dark:text-zinc-300">
+            <div className="mt-4 flex justify-center items-center gap-3 max-w-full">
+              <span className="text-sm sm:text-base font-medium text-zinc-700 dark:text-zinc-300 shrink-0">
                 For
               </span>
 
               <Badge
-                variant={"secondary"}
-                className="px-2 inline-flex items-center gap-1.5 font-semibold text-white bg-blue-500 dark:bg-blue-600
-           "
+                variant="secondary"
+                className="
+      px-2
+      inline-flex
+      items-center
+      gap-1.5
+      font-semibold
+      text-white
+      bg-blue-500 dark:bg-blue-600
+
+      max-w-full
+      min-w-0
+      break-all
+      whitespace-normal
+    "
               >
-                {username}
-                <BadgeCheckIcon
-                  className="
-            h-4 w-4
-            text-white
-          "
-                />
+                <span className="break-all whitespace-normal">{username}</span>
+
+                <BadgeCheckIcon className="h-4 w-4 text-white shrink-0" />
               </Badge>
             </div>
           )}

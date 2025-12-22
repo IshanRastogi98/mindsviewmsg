@@ -65,22 +65,28 @@ export default async function Page({ params }: PageProps) {
 
   return (
     <>
-      <h1 className="text-3xl sm:text-4xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-100 text-center mt-12">
+      <h1 className="text-3xl sm:text-4xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-100 text-center mt-12 px-3">
         Send Anonymous messages to{" "}
-        <span className="text-blue-500 dark:text-blue-400">{username}</span>
+        <span className="text-blue-500 dark:text-blue-400 break-all max-w-full">
+          {username}
+        </span>
       </h1>
       <p
         className="
-        mt-4 max-w-md mx-auto
-        text-sm sm:text-base
-        text-zinc-600 dark:text-zinc-400
-        text-center
-      "
+    mt-4 max-w-md mx-auto
+    text-sm sm:text-base
+    text-zinc-600 dark:text-zinc-400
+    text-center
+    whitespace-normal px-6
+  "
       >
         You can send anonymous messages to{" "}
-        <span className="text-blue-500 dark:text-blue-400">{username}</span>.
-        Messages are private and do not reveal the sender’s identity.
+        <span className="text-blue-500 dark:text-blue-400 break-all max-w-full">
+          @{username}
+        </span>
+        . Messages are private and do not reveal the sender’s identity.
       </p>
+
       <MainFeature session={session} username={username} allowEdit={false} />
     </>
   );
