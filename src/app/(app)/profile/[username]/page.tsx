@@ -67,7 +67,7 @@ export default async function ProfilePage({
         <Card className="rounded-2xl">
           <CardContent className="pt-6 flex flex-col items-center text-center gap-4">
             {/* LCP ELEMENT */}
-            <h1 className="text-2xl font-semibold wrap-break-word whitespace-normal">
+            <h1 className="text-2xl font-semibold break-all whitespace-normal max-w-full">
               Profile @{username}
             </h1>
 
