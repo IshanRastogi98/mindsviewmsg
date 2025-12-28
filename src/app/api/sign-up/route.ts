@@ -79,7 +79,7 @@ export async function POST(request: Request) {
         existingUserByEmail.password = hashedPassword;
         existingUserByEmail.username = username;
         existingUserByEmail.verifyCode = otp;
-        console.log("new otp->", otp, existingUserByEmail.verifyCode);
+        // console.log("new otp->", otp, existingUserByEmail.verifyCode);
         existingUserByEmail.verifyCodeExpiry = new Date(Date.now() + 3600000);
         await existingUserByEmail.save();
       }
