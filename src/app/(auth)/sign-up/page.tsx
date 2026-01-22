@@ -1,17 +1,14 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm, SubmitHandler } from "react-hook-form";
 import * as z from "zod";
 import Link from "next/link";
 import { useDebounceValue } from "usehooks-ts";
-import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { signUpSchema } from "@/schemas/signUpSchema";
 import axios, { AxiosError } from "axios";
 import { ApiResponse } from "@/types/ApiResponse";
-import { title } from "process";
-import { CheckCircle2, Loader2, XCircle } from "lucide-react";
 import { errorToast, infoToast, successToast } from "@/components/ui/sonner";
 import {
   Form,
@@ -44,7 +41,7 @@ const page = () => {
     // resolver options
     resolver: zodResolver(
       // requires schema for validation
-      signUpSchema
+      signUpSchema,
     ),
     defaultValues: {
       // the default values
@@ -70,14 +67,14 @@ const page = () => {
         setUsernameMessage("");
         try {
           const response = await axios.get(
-            `/api/check-username-unique?username=${debouncedUsername}`
+            `/api/check-username-unique?username=${debouncedUsername}`,
           );
 
           setUsernameMessage(response.data.message);
         } catch (error) {
           const axiosError = error as AxiosError<ApiResponse>;
           setUsernameMessage(
-            axiosError?.response?.data?.message ?? "Error Checking Username" // if not found
+            axiosError?.response?.data?.message ?? "Error Checking Username", // if not found
           );
         } finally {
           setIsCheckingUsername(false);
@@ -89,7 +86,7 @@ const page = () => {
 
   //2-> submission handling
   const onSubmit: SubmitHandler<z.infer<typeof signUpSchema>> = async (
-    data: z.infer<typeof signUpSchema>
+    data: z.infer<typeof signUpSchema>,
   ) => {
     if (isSubmitting || isSubmittingToProvider)
       return infoToast({

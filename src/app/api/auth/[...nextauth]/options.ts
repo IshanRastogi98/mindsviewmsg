@@ -1,11 +1,9 @@
-import NextAuth, { NextAuthOptions } from "next-auth";
+import { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
 import connectDB from "@/lib/dbConnect";
 import UserModel from "@/model/user";
 import GoogleProvider from "next-auth/providers/google"; // 1. Import GoogleProvider
-import Credentials from "next-auth/providers/credentials";
-import mongoose, { ObjectId } from "mongoose";
 
 export const authOptions: NextAuthOptions = {
   providers: [
@@ -55,7 +53,7 @@ export const authOptions: NextAuthOptions = {
           }
           const passwordMatch = await bcrypt.compare(
             credentials.password,
-            user.password
+            user.password,
           );
           if (!passwordMatch)
             throw new Error("Username/Email or Password is wrong !!");

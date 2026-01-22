@@ -7,7 +7,6 @@ import { google } from "@ai-sdk/google";
 import { generateObject, streamObject } from "ai";
 import { getServerSession } from "next-auth";
 import { NextResponse } from "next/server";
-import * as z from "zod";
 import { authOptions } from "../auth/[...nextauth]/options";
 
 export const maxDuration = 30;

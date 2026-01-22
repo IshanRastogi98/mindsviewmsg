@@ -2,10 +2,8 @@ import connectDB from "@/lib/dbConnect";
 import { RATE_LIMITS } from "@/lib/rateLimitConfigs";
 import { rateLimit } from "@/lib/rateLimiter";
 import UserModel from "@/model/user";
-import { usernameValidation } from "@/schemas/signUpSchema";
 import { verifyCodeSchema } from "@/schemas/verifySchema";
 import { NextResponse } from "next/server";
-import z from "zod";
 
 export async function POST(request: Request) {
   try {

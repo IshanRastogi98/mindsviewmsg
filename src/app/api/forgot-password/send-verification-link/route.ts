@@ -1,18 +1,9 @@
-import { passwordValidation } from "@/schemas/signUpSchema";
-import { getServerSession, User } from "next-auth";
-import z from "zod";
-import mongoose from "mongoose";
 import connectDB from "@/lib/dbConnect";
 import UserModel from "@/model/user";
-import bcrypt from "bcryptjs";
 import { NextResponse } from "next/server";
 import { ApiResponse } from "@/types/ApiResponse";
-import { usernameValidation } from "@/schemas/signUpSchema";
 import crypto from "crypto";
-import {
-  resetPasswordEmail,
-  resetPasswordEmailBrevo,
-} from "@/helpers/sendVerificationEmail";
+import { resetPasswordEmailBrevo } from "@/helpers/sendVerificationEmail";
 import { identifierValidationSchema } from "@/schemas/resetPasswordSchemas";
 
 export async function POST(request: Request) {
@@ -32,7 +23,7 @@ export async function POST(request: Request) {
         success: false,
         message: errorMessage,
       },
-      { status: 400 }
+      { status: 400 },
     );
   }
   const identifier = result.data.identifier;
@@ -51,7 +42,7 @@ export async function POST(request: Request) {
           success: false,
           message: "User not found",
         },
-        { status: 404 }
+        { status: 404 },
       );
     }
     if (user.resetTokenExpiry && new Date(user.resetTokenExpiry) > new Date()) {
@@ -61,7 +52,7 @@ export async function POST(request: Request) {
           message:
             "A password reset request has already been sent. Please check your email or try again later.",
         },
-        { status: 429 }
+        { status: 429 },
       );
     }
     const resetToken = crypto.randomBytes(32).toString("hex");
@@ -79,7 +70,7 @@ export async function POST(request: Request) {
     // }
     const resetUrl = new URL(
       `/reset-password/${user.username}?token=${encodeURIComponent(resetToken)}`,
-      baseUrl
+      baseUrl,
     ).toString();
 
     user.resetToken = resetToken;
@@ -95,7 +86,7 @@ export async function POST(request: Request) {
     const emailResendResponse = await resetPasswordEmailBrevo(
       user.email as string,
       user.username,
-      resetUrl
+      resetUrl,
     ); // Brevo Version
 
     if (!emailResendResponse.success) {
@@ -104,7 +95,7 @@ export async function POST(request: Request) {
       user.save();
       console.error(
         "\n\nError sending Reset Password Request",
-        emailResendResponse
+        emailResendResponse,
       );
 
       return Response.json(
@@ -112,7 +103,7 @@ export async function POST(request: Request) {
           success: false,
           message: "error sending email " + emailResendResponse.message,
         },
-        { status: 500 }
+        { status: 500 },
       );
     }
     // finally successful
@@ -121,7 +112,7 @@ export async function POST(request: Request) {
         success: true,
         message: "Reset Password Request Successfully, if the user exists",
       },
-      { status: 200 }
+      { status: 200 },
     );
   } catch (error) {
     if (user) {
@@ -137,7 +128,7 @@ export async function POST(request: Request) {
       },
       {
         status: 500,
-      }
+      },
     );
   }
 }

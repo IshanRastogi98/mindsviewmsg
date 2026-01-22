@@ -1,10 +1,7 @@
 import connectDB from "@/lib/dbConnect";
 import UserModel from "@/model/user";
 import bcrypt from "bcryptjs";
-import {
-  sendVerificationEmail,
-  sendVerificationEmailBrevo,
-} from "@/helpers/sendVerificationEmail";
+import { sendVerificationEmailBrevo } from "@/helpers/sendVerificationEmail";
 import { signUpSchema } from "@/schemas/signUpSchema";
 
 export async function POST(request: Request) {
@@ -18,7 +15,7 @@ export async function POST(request: Request) {
           success: false,
           message: "All Fields are mandatory",
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -40,7 +37,7 @@ export async function POST(request: Request) {
           success: false,
           message: errorMessage,
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
     username = result.data.username;
@@ -57,7 +54,7 @@ export async function POST(request: Request) {
           success: false,
           message: "Username is already taken",
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
     const existingUserByEmail = await UserModel.findOne({
@@ -71,7 +68,7 @@ export async function POST(request: Request) {
             success: false,
             message: "Email is already taken",
           },
-          { status: 400 }
+          { status: 400 },
         );
       } else {
         // new password and otp
@@ -114,7 +111,7 @@ export async function POST(request: Request) {
     const emailResendResponse = await sendVerificationEmailBrevo(
       email,
       username,
-      otp
+      otp,
     ); // Brevo Version
 
     if (!emailResendResponse.success) {
@@ -123,7 +120,7 @@ export async function POST(request: Request) {
           success: false,
           message: emailResendResponse.message,
         },
-        { status: 500 }
+        { status: 500 },
       );
     }
     // finally successful
@@ -132,7 +129,7 @@ export async function POST(request: Request) {
         success: true,
         message: "User Registered Successfully and Verification Email sent",
       },
-      { status: 201 }
+      { status: 201 },
     );
   } catch (error) {
     console.error("Error Registring user", error);
@@ -143,7 +140,7 @@ export async function POST(request: Request) {
       },
       {
         status: 500,
-      }
+      },
     );
   }
 }

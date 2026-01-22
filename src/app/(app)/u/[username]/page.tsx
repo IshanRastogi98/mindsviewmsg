@@ -3,7 +3,6 @@ import { authOptions } from "@/app/api/auth/[...nextauth]/options";
 import MainFeature from "@/components/MainFeature";
 import { Session } from "next-auth";
 import { Metadata } from "next";
-import { checkIfUsernameHasMessages } from "@/lib/seo";
 
 type PageProps = {
   params: Promise<{

@@ -1,5 +1,4 @@
 import {
-  sendVerificationEmail,
   sendVerificationEmailBrevo,
 } from "@/helpers/sendVerificationEmail";
 import connectDB from "@/lib/dbConnect";
@@ -7,11 +6,8 @@ import { RATE_LIMITS } from "@/lib/rateLimitConfigs";
 import { rateLimit } from "@/lib/rateLimiter";
 import UserModel from "@/model/user";
 import { usernameValidation } from "@/schemas/signUpSchema";
-import { ApiResponse } from "@/types/ApiResponse";
-import { getServerSession } from "next-auth";
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import { authOptions } from "../../auth/[...nextauth]/options";
 
 const validationSchema = z.object({
   username: usernameValidation,

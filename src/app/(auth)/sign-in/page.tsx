@@ -1,22 +1,14 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import { useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm, SubmitHandler } from "react-hook-form";
 import * as z from "zod";
 import Link from "next/link";
-import { useDebounceValue } from "usehooks-ts";
-import { toast } from "sonner";
 import { useRouter } from "next/navigation";
-import { signUpSchema } from "@/schemas/signUpSchema";
-import axios, { AxiosError } from "axios";
-import { ApiResponse } from "@/types/ApiResponse";
-import { title } from "process";
-import { CheckCircle2, Loader2, XCircle } from "lucide-react";
-import { errorToast, infoToast, successToast } from "@/components/ui/sonner";
+import { errorToast, infoToast } from "@/components/ui/sonner";
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -39,7 +31,7 @@ const page = () => {
     // resolver options
     resolver: zodResolver(
       // requires schema for validation
-      signInSchema
+      signInSchema,
     ),
     defaultValues: {
       // the default values
@@ -50,7 +42,7 @@ const page = () => {
 
   // submission handling
   const onSubmit: SubmitHandler<z.infer<typeof signInSchema>> = async (
-    data: z.infer<typeof signInSchema>
+    data: z.infer<typeof signInSchema>,
   ) => {
     // just add the signin from the next auth
     // put credentials(since used that only)

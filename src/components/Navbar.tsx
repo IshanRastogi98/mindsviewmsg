@@ -4,18 +4,13 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useSession, signOut } from "next-auth/react";
 import { User } from "next-auth";
-
-import { useTheme } from "next-themes";
-
 import { Button } from "@/components/ui/button";
-
 import {
   Sheet,
   SheetContent,
   SheetTrigger,
   SheetTitle,
 } from "@/components/ui/sheet";
-
 import {
   Menu,
   MessageCircle,
@@ -24,8 +19,6 @@ import {
   LogIn,
   LogOut,
   Layers,
-  Moon,
-  Sun,
   Users,
 } from "lucide-react";
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden";

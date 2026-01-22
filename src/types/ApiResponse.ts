@@ -1,6 +1,5 @@
 import { Message } from "@/model/user";
 import { messageSuggestionSchema } from "@/schemas/messageSuggestionSchema";
-import { User } from "next-auth";
 import * as z from "zod";
 export interface ApiResponse {
   success: boolean;

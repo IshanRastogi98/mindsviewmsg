@@ -20,13 +20,9 @@ export default function PrivacyClient() {
 
       <main className="w-full overflow-hidden bg-zinc-50 dark:bg-zinc-950">
         {/* ================= HERO ================= */}
-        <section className="w-full px-6 py-28 flex justify-center">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, ease: "easeOut" }}
-            className="w-full max-w-4xl text-center flex flex-col gap-6"
-          >
+       <section className="w-full px-6 py-28 flex justify-center">
+          <div className="w-full max-w-4xl text-center flex flex-col gap-6">
+            
             <ShieldCheck className="w-8 h-8 mx-auto text-zinc-700 dark:text-zinc-300" />
 
             <h1 className="text-4xl md:text-5xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-100">
@@ -38,7 +34,7 @@ export default function PrivacyClient() {
               explains what we collect, what we intentionally avoid collecting,
               and how your privacy is protected.
             </p>
-          </motion.div>
+          </div>
         </section>
 
         {/* ================= CONTENT ================= */}

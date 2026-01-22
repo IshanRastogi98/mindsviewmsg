@@ -1,5 +1,3 @@
-import { passwordValidation, usernameValidation } from "@/schemas/signUpSchema";
-import z from "zod";
 import connectDB from "@/lib/dbConnect";
 import UserModel from "@/model/user";
 import bcrypt from "bcryptjs";
