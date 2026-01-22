@@ -10,6 +10,7 @@ import {
   SheetContent,
   SheetTrigger,
   SheetTitle,
+  SheetDescription,
 } from "@/components/ui/sheet";
 import {
   Menu,
@@ -164,6 +165,9 @@ const Navbar = () => {
           >
             <VisuallyHidden>
               <SheetTitle>Mobile Navigation Menu</SheetTitle>
+              <SheetDescription>
+                Navigation panel for mobile users
+              </SheetDescription>
             </VisuallyHidden>
 
             {/* User Info Card */}

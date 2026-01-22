@@ -3,7 +3,6 @@
 import Link from "next/link";
 import {
   Github,
-  Twitter,
   Linkedin,
   Instagram,
   ArrowUpRight,
@@ -29,16 +28,49 @@ export default function Footer() {
               </span>
             </div>
 
-            <div className="flex gap-3 pt-2">
-              {[Github, Twitter, Linkedin, Instagram].map((Icon, i) => (
-                <Link
-                  key={i}
-                  href="#"
-                  className="flex h-9 w-9 items-center justify-center rounded-lg bg-zinc-100 dark:bg-zinc-800 border border-zinc-300/40 dark:border-white/10 text-zinc-600 dark:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-all"
-                >
-                  <Icon className="h-4 w-4" />
-                </Link>
-              ))}
+            {/* ===== Developer Info ===== */}
+            <div className="pt-2 text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">
+              Built by{" "}
+              <span className="font-semibold text-zinc-900 dark:text-zinc-100">
+                Ishan Rastogi
+              </span>
+              <br />
+              B.Tech CSE Student · IIIT Bhopal
+            </div>
+
+            {/* ===== Social Links ===== */}
+            <div className="flex gap-3 pt-3">
+              <Link
+                href="https://github.com/IshanRastogi98/mindsviewmsg"
+                target="_blank"
+                className="flex h-9 w-9 items-center justify-center rounded-lg bg-zinc-100 dark:bg-zinc-800 border border-zinc-300/40 dark:border-white/10 text-zinc-600 dark:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-all"
+              >
+                <Github className="h-4 w-4" />
+              </Link>
+
+              {/* <Link
+                href="https://twitter.com/username"
+                target="_blank"
+                className="flex h-9 w-9 items-center justify-center rounded-lg bg-zinc-100 dark:bg-zinc-800 border border-zinc-300/40 dark:border-white/10 text-zinc-600 dark:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-all"
+              >
+                <Twitter className="h-4 w-4" />
+              </Link> */}
+
+              <Link
+                href="https://www.linkedin.com/in/ishan-rastogi-303550225/"
+                target="_blank"
+                className="flex h-9 w-9 items-center justify-center rounded-lg bg-zinc-100 dark:bg-zinc-800 border border-zinc-300/40 dark:border-white/10 text-zinc-600 dark:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-all"
+              >
+                <Linkedin className="h-4 w-4" />
+              </Link>
+
+              <Link
+                href="https://www.instagram.com/ishan_rastogi__/"
+                target="_blank"
+                className="flex h-9 w-9 items-center justify-center rounded-lg bg-zinc-100 dark:bg-zinc-800 border border-zinc-300/40 dark:border-white/10 text-zinc-600 dark:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-all"
+              >
+                <Instagram className="h-4 w-4" />
+              </Link>
             </div>
           </div>
 
